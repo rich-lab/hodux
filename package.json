@@ -1,0 +1,26 @@
+{
+  "name": "hodux",
+  "version": "0.0.1",
+  "description": "A better redux for React Hooks.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/react-kit/hodux.git"
+  },
+  "keywords": [
+    "react",
+    "hooks",
+    "redux",
+    "hodux",
+    "state manage"
+  ],
+  "author": "chemdemo",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/react-kit/hodux/issues"
+  },
+  "homepage": "https://github.com/react-kit/hodux#readme"
+}

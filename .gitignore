@@ -1,0 +1,13 @@
+*~
+*.swp
+.DS_Store
+node_modules
+lib
+es
+dist
+_ignores
+coverage
+subscribe.js
+npm-debug.log
+npm-debug.log*
+yarn-error.log*

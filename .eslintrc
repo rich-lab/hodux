@@ -1,0 +1,74 @@
+{
+  "parser": "@typescript-eslint/parser",
+  "plugins": [
+    "@typescript-eslint",
+    "prettier",
+    "react-hooks",
+    "jest",
+    "import"
+  ],
+  "extends": [
+    "plugin:jest/recommended",
+    "plugin:@typescript-eslint/recommended",
+    "airbnb",
+    "prettier",
+    "prettier/@typescript-eslint"
+  ],
+  "env": {
+    "browser": true,
+    "jest": true
+  },
+  "settings": {
+    "import/resolver": {
+      "node": {
+        "extensions": [".js", ".ts", ".tsx", ".jsx"]
+      }
+    }
+  },
+  "rules": {
+    "react-hooks/rules-of-hooks": "error",
+    "react-hooks/exhaustive-deps": "error",
+    "@typescript-eslint/explicit-function-return-type": "off",
+    "@typescript-eslint/no-explicit-any": "off",
+    "@typescript-eslint/no-use-before-define": "off",
+    "@typescript-eslint/camelcase": "off",
+    "@typescript-eslint/no-unused-vars": "off",
+    "react/jsx-filename-extension": ["error", { "extensions": [".js", ".tsx"] }],
+    "react/prop-types": "off",
+    "react/jsx-one-expression-per-line": "off",
+    "import/prefer-default-export": "off",
+    "import/no-unresolved": ["off"],
+    "no-param-reassign": "off",
+    "arrow-body-style": "off",
+    "no-plusplus": "off",
+    "import/no-duplicates": "off",
+    "import/no-mutable-exports": "off",
+    "arrow-parens": "off",
+    "prefer-object-spread": "off",
+    "no-console": "off",
+    "no-underscore-dangle": "off",
+    "no-use-before-define": "off",
+    "no-unused-vars": "off",
+    "no-self-compare": "off",
+    "no-return-assign": "off",
+    "camelcase": "off"
+  },
+  "overrides": [
+    {
+      "files": ["**/test/**/*"],
+      "env": {
+        "jest": true
+      },
+      "rules": {
+        "import/no-extraneous-dependencies": ["error", { "devDependencies": true }]
+      }
+    },
+    {
+      "files": ["examples/**/*"],
+      "rules": {
+        "import/no-duplicates": "off",
+        "import/no-extraneous-dependencies": "off"
+      }
+    }
+  ]
+}

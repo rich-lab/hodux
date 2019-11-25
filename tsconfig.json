@@ -1,0 +1,19 @@
+{
+  "compilerOptions": {
+    "sourceMap": false,
+    "module": "esnext",
+    "target": "es6",
+    "jsx": "react",
+    "declaration": true,
+    "moduleResolution": "node",
+    "allowSyntheticDefaultImports": true,
+    "lib": ["es6", "dom"]
+  },
+  "exclude": [
+    "examples",
+    "test",
+    "coverage",
+    "_ignores",
+    "node_modules"
+  ]
+}

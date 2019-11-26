@@ -1,16 +1,20 @@
 import React from 'react';
 
-import { useSelector } from 'hodux';
+import { useSelector, shallowEqual } from 'hodux';
 
 import counter from '../counter';
 import Counter from './Counter';
 
 const App: React.FC = () => {
-  const { count, foo, loading } = useSelector(counter, s => ({
-    count: s.state.count,
-    foo: s.state.nested.foo,
-    loading: s.loading,
-  }));
+  const { count, foo, loading } = useSelector(
+    counter,
+    s => ({
+      count: s.state.count,
+      foo: s.state.nested.foo,
+      loading: s.loading,
+    }),
+    { equals: shallowEqual },
+  );
   console.log('[App render]');
 
   return (

@@ -5,17 +5,19 @@ import { useSelector } from 'hodux';
 import counter from '../counter';
 
 const Counter: React.FC = () => {
-  const { count, foo, loading } = useSelector(counter, s => ({
+  // useSelector(counter, selector, { equals, debugger });
+  const { count, foo, loading, m } = useSelector(counter, s => ({
     count: s.state.count,
     foo: s.state.nested.foo,
     loading: s.loading,
+    m: s.m.has(1),
   }));
-  console.log('[Counter render]');
+  console.log('[Counter render]', m);
 
   return (
     <>
       <div>
-        count: {count}, foo: {foo}
+        count: {count}, foo: {foo}, m: {m ? 'hasSet' : '--'}
       </div>
       <button onClick={() => counter.add()}>add 1</button>
       <button
@@ -25,7 +27,8 @@ const Counter: React.FC = () => {
       >
         addx 10{loading ? '...' : ''}
       </button>
-      <Counter />
+      <button onClick={counter.setAdd}>set add</button>
+      <button onClick={counter.nested}>foo change</button>
     </>
   );
 };

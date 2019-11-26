@@ -12,7 +12,7 @@ export const isFunction = (val: unknown) => typeof val === 'function';
 
 const hasOwn = Object.prototype.hasOwnProperty;
 
-export function shallowEqual(objA, objB) {
+export function shallowEqual(objA: any, objB: any) {
   if (is(objA, objB)) return true;
 
   if (!isObject(objA) || objA === null || !isObject(objB) || objB === null) {
@@ -33,7 +33,7 @@ export function shallowEqual(objA, objB) {
   return true;
 }
 
-function is(x, y) {
+function is(x: any, y: any) {
   if (x === y) {
     return x !== 0 || y !== 0 || 1 / x === 1 / y;
   }
@@ -41,6 +41,6 @@ function is(x, y) {
   return x !== x && y !== y;
 }
 
-function isObject(obj) {
+function isObject(obj: unknown) {
   return typeof obj !== 'object';
 }

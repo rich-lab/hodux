@@ -1,3 +1,3 @@
 # hodux
 
-> Reactive state management for React Hooks.
+> Reactive state management for React.

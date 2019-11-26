@@ -1,6 +1,6 @@
 {
   "name": "hodux",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Reactive state management for React Hooks",
   "main": "dist/index.js",
   "module": "dist/index.esm.js",

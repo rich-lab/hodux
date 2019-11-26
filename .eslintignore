@@ -1,9 +1,8 @@
 node_modules
 dist
-es
-lib
 scripts
 coverage
+_ignores
 *.js.map
 *.d.ts
 

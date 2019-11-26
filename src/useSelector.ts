@@ -51,10 +51,8 @@ export default function useSelector<T extends object, V = any>(
   const vRef: React.MutableRefObject<any> = useRef();
 
   if (!reactionRef.current) {
-    // console.log("run observe");
     reactionRef.current = observe(() => (vRef.current = selector(store)), {
       scheduler: (reaction: Function) => {
-        // const newValue = reaction();
         const newValue = selector(store);
 
         // TODO: diff logger
@@ -67,7 +65,6 @@ export default function useSelector<T extends object, V = any>(
       debugger: cfg.debugger,
     });
   } else {
-    // vRef.current = selector(store);
     reactionRef.current();
   }
 

@@ -1,9 +1,30 @@
 import * as React from 'react';
 import { createContext, PropsWithChildren, createElement, memo } from 'react';
 
+// debugger event types
+export enum EventTypes {
+  set = 'set',
+  add = 'add',
+  delete = 'delete',
+  clear = 'clear',
+  get = 'get',
+  has = 'has',
+  iterate = 'iterate',
+}
+
+export interface Event {
+  type: EventTypes;
+  target: object;
+  key?: string;
+  receiver?: object;
+  oldValue?: any;
+  value?: any;
+  oldTarget?: object;
+}
+
 export type Config<T = any> = {
   equals?: (a: T, b: T) => boolean;
-  debugger?: Function;
+  debugger?: (event: Event) => void;
 };
 
 export const HoduxContext = createContext<Config>({});
@@ -16,6 +37,8 @@ type Props<T = any> = PropsWithChildren<{
 }>;
 
 /**
+ * Provider the global config for all the `useSelector()` hook
+ *
  * @example
  * ReactDOM.render(
  *  <HoduxConfig equals={_.isEqual}>
@@ -29,13 +52,3 @@ export const HoduxConfig: React.FC<Props> = memo(props => {
 
   return createElement(HoduxContext.Provider, { value }, props.children);
 });
-
-// export class HoduxConfig extends React.PureComponent<Props> {
-//   render() {
-//     return (
-//       <HoduxContext.Provider value={this.props.config}>
-//         {this.props.children}
-//       </HoduxContext.Provider>
-//     );
-//   }
-// }

@@ -12,7 +12,7 @@ const Counter: React.FC = () => {
     loading: s.loading,
     m: s.m.has(1),
   }));
-  console.log('[Counter render]', m);
+  console.log('[Counter render]');
 
   return (
     <>

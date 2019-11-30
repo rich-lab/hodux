@@ -1,6 +1,6 @@
 {
   "name": "hodux",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "description": "Reactive state management for React",
   "main": "dist/index.js",
   "module": "dist/index.esm.js",
@@ -27,6 +27,9 @@
   },
   "dependencies": {
     "@nx-js/observer-util": "^4.2.2",
+    "@types/hoist-non-react-statics": "^3.3.1",
+    "@types/invariant": "^2.2.30",
+    "hoist-non-react-statics": "^3.3.1",
     "invariant": "^2.2.4"
   },
   "devDependencies": {

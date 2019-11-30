@@ -4,6 +4,7 @@ import { useSelector, shallowEqual } from 'hodux';
 
 import counter from '../counter';
 import Counter from './Counter';
+// import CounterClass from './CounterClass';
 
 const App: React.FC = () => {
   const { count, foo, loading } = useSelector(
@@ -31,6 +32,7 @@ const App: React.FC = () => {
         addx 1{loading ? '...' : ''}
       </button>
       <Counter />
+      {/* <CounterClass /> */}
     </>
   );
 };

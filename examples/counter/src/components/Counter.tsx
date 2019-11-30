@@ -1,8 +1,10 @@
 import React from 'react';
 
-import { useSelector } from 'hodux';
+import { useSelector, PickState } from 'hodux';
 
 import counter from '../counter';
+
+type Store = PickState<typeof counter>;
 
 const Counter: React.FC = () => {
   // useSelector(counter, selector, { equals, debugger });

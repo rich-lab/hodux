@@ -1,8 +1,8 @@
-import { createStore, batch } from 'hodux';
+import { store, batch } from 'hodux';
 
 let c = 0;
 
-const counter = createStore({
+const counter = store({
   c: 0,
   loading: false,
   m: new Set(),

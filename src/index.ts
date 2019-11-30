@@ -1,6 +1,7 @@
-import createStore from './createStore';
+import store from './createStore';
 import useSelector from './useSelector';
+import { connect } from './connect';
 import { HoduxConfig } from './Config';
-import { batch, shallowEqual } from './utils';
+import { batch, shallowEqual, PickState } from './utils';
 
-export { HoduxConfig, createStore, useSelector, batch, shallowEqual };
+export { HoduxConfig, store, useSelector, connect, batch, shallowEqual, PickState };

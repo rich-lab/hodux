@@ -59,10 +59,10 @@ export type Event =
   | IterateEvent
   | ClearEvent;
 
-export type Config<T = any> = {
+export interface Config<T = any> {
   equals?: (a: T, b: T) => boolean;
   debugger?: (event: Event) => void;
-};
+}
 
 export const HoduxContext = createContext<Config>({});
 
@@ -74,7 +74,7 @@ type Props<T = any> = PropsWithChildren<{
 }>;
 
 /**
- * Provider the global config for all the `useSelector()` hook
+ * Provider the global config for all useSelector() and connect()
  *
  * @example
  * ReactDOM.render(

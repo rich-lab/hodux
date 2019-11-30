@@ -3,15 +3,31 @@ import { observe, unobserve, isObservable } from '@nx-js/observer-util';
 import invariant from 'invariant';
 
 import { HoduxContext, Config } from './Config';
-import { isFunction } from './utils';
+import { isFunction, PickState } from './utils';
 
 // @see react-redux
 const useIsomorphicLayoutEffect = typeof window !== 'undefined' ? useLayoutEffect : useEffect;
 const refEquality = (a: unknown, b: unknown) => a === b;
 
+export interface Selector<Store, Selected = any, OwnProps = any> {
+  (store: PickState<Store>, ownProps?: OwnProps): Selected;
+}
+
 /**
- * A hook to access some store's state. This hook takes a selector function
- * as an argument. The selector is called with the passed store state.
+ * A hook to access the state of a hodux store.
+ *
+ * useSelector accepts three parameters:
+ *
+ * - the first parameter is a reactived store returns by store()
+ *
+ * - the second parameter is a selector function familiar to useSelector() in react-redux which is called with the passed store
+ *
+ * - the last one is an optional config object
+ *
+ *    - equals: the compare function between previous selected value and the next selected value, the defalut is equality
+ *
+ *    - debugger: the debugger function passed to `@nx-js/observer-util`
+ *
  *
  * @param {Object} store the obversed store
  * @param {Function} selector the selector function
@@ -22,9 +38,9 @@ const refEquality = (a: unknown, b: unknown) => a === b;
  * @example
  *
  * import React from 'react'
- * import { createStore, useSelector } from 'hodux'
+ * import { store, useSelector } from 'hodux'
  *
- * const counter = createStore({
+ * const counter = store({
  *   num: 0,
  *   inc() { counter.num += 1; }
  * })
@@ -34,11 +50,11 @@ const refEquality = (a: unknown, b: unknown) => a === b;
  *   return <div onClick={counter.inc}>{num}</div>
  * }
  */
-export default function useSelector<T extends object, V = any>(
-  store: T,
-  selector: (store: T) => V,
-  config?: Config<V>,
-): V {
+export default function useSelector<Store extends object, SelectedValue = any>(
+  store: Store,
+  selector: Selector<Store, SelectedValue>,
+  config?: Config<SelectedValue>,
+): SelectedValue {
   invariant(isObservable(store), `store ${store} has not created!`);
 
   const globalConfig = useContext(HoduxContext);

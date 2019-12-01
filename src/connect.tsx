@@ -1,44 +1,10 @@
-import React, { FC, ComponentClass, NamedExoticComponent, useCallback } from 'react';
-import hoistStatics, { NonReactStatics } from 'hoist-non-react-statics';
+import React, { FC, useCallback } from 'react';
+import hoistStatics from 'hoist-non-react-statics';
 
-import { Config } from './Config';
 import { shallowEqual } from './utils';
-import useSelector, { Selector } from './useSelector';
+import useSelector from './useSelector';
 
-// Omit taken from https://www.typescriptlang.org/docs/handbook/release-notes/typescript-2-8.html
-type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>;
-
-type Matching<InjectedProps, DecorationTargetProps> = {
-  [P in keyof DecorationTargetProps]: P extends keyof InjectedProps
-    ? InjectedProps[P] extends DecorationTargetProps[P]
-      ? DecorationTargetProps[P]
-      : InjectedProps[P]
-    : DecorationTargetProps[P];
-};
-
-type Shared<InjectedProps, DecorationTargetProps> = {
-  [P in Extract<
-    keyof InjectedProps,
-    keyof DecorationTargetProps
-  >]?: InjectedProps[P] extends DecorationTargetProps[P] ? DecorationTargetProps[P] : never;
-};
-
-// Infers prop type from component C
-type GetProps<C> = C extends ComponentClass<infer P> ? P : never;
-
-// only support ComponentClass, FunctionComponent should use useSelector hook!
-type ConnectedComponent<C extends ComponentClass<any>, P> = 
-  NamedExoticComponent<JSX.LibraryManagedAttributes<C, P>> & NonReactStatics<C>;
-
-// @see https://github.com/DefinitelyTyped/DefinitelyTyped/blob/674d84d48af47b4b608d54c71f148e605dff2ccd/types/react-redux/index.d.ts
-type InferableComponentEnhancerWithProps<TInjectedProps, TNeedsProps> = <
-  C extends ComponentClass<Matching<TInjectedProps, GetProps<C>>>
->(
-  component: C,
-) => ConnectedComponent<
-  C,
-  Omit<GetProps<C>, keyof Shared<TInjectedProps, GetProps<C>>> & TNeedsProps
->;
+import { Config, Selector, InferableComponentEnhancerWithProps } from './types';
 
 /**
  * Connects a React class component to a hodux store.

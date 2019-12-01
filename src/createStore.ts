@@ -2,11 +2,7 @@ import { observable } from '@nx-js/observer-util';
 
 import { rawToProxy } from './internals';
 
-// export type Store<T> = {
-//   [K in keyof T]: T[K]
-// }
-
-export default function createStore<T extends object>(model: T): T {
+export default function createStore<M extends object>(model: M): M {
   let store = rawToProxy.get(model);
 
   if (store) return store;

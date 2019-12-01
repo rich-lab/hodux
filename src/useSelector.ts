@@ -2,16 +2,14 @@ import React, { useContext, useEffect, useLayoutEffect, useReducer, useRef } fro
 import { observe, unobserve, isObservable } from '@nx-js/observer-util';
 import invariant from 'invariant';
 
-import { HoduxContext, Config } from './Config';
-import { isFunction, PickState } from './utils';
+import { HoduxContext } from './Config';
+import { isFunction } from './utils';
+
+import { Config, Selector } from './types';
 
 // @see react-redux
 const useIsomorphicLayoutEffect = typeof window !== 'undefined' ? useLayoutEffect : useEffect;
 const refEquality = (a: unknown, b: unknown) => a === b;
-
-export interface Selector<Store, Selected = any, OwnProps = any> {
-  (store: PickState<Store>, ownProps?: OwnProps): Selected;
-}
 
 /**
  * A hook to access the state of a hodux store.

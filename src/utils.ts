@@ -44,8 +44,3 @@ function is(x: any, y: any) {
 export function isObject(obj: unknown) {
   return typeof obj !== 'object';
 }
-
-export type NonFunctionKeys<T> = { [K in keyof T]: T[K] extends Function ? never : K }[keyof T];
-
-// Exclude all methods from store!
-export type PickState<Store> = Pick<Store, NonFunctionKeys<Store>>;

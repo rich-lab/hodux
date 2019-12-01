@@ -12,7 +12,7 @@ type Props = ReturnType<typeof selector>;
 
 class Counter extends Component<Props> {
   render() {
-    console.log('[ClassCounter render ]');
+    console.log('[ClassCounter render]');
 
     return (
       <>

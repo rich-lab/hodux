@@ -27,10 +27,8 @@ type Shared<InjectedProps, DecorationTargetProps> = {
 type GetProps<C> = C extends ComponentClass<infer P> ? P : never;
 
 // only support ComponentClass, FunctionComponent should use useSelector hook!
-type ConnectedComponent<C extends ComponentClass<any>, P> = NamedExoticComponent<
-  JSX.LibraryManagedAttributes<C, P>
-> &
-  NonReactStatics<C>;
+type ConnectedComponent<C extends ComponentClass<any>, P> = 
+  NamedExoticComponent<JSX.LibraryManagedAttributes<C, P>> & NonReactStatics<C>;
 
 // @see https://github.com/DefinitelyTyped/DefinitelyTyped/blob/674d84d48af47b4b608d54c71f148e605dff2ccd/types/react-redux/index.d.ts
 type InferableComponentEnhancerWithProps<TInjectedProps, TNeedsProps> = <

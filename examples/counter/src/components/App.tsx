@@ -1,25 +1,22 @@
 import React from 'react';
 
-import { useSelector, shallowEqual } from 'hodux';
+import { useSelector } from 'hodux';
 
 import counter from '../counter';
 import Counter from './Counter';
 import CounterClass from './CounterClass';
 
 const App: React.FC = () => {
-  const { count, foo, loading } = useSelector(
-    counter,
-    s => ({
-      count: s.state.count,
-      foo: s.state.nested.foo,
-      loading: s.loading,
-    }),
-    { equals: shallowEqual },
-  );
+  const { count, foo, loading } = useSelector(() => ({
+    count: counter.state.count,
+    foo: counter.state.nested.foo,
+    loading: counter.loading,
+  }));
   console.log('[App render]');
 
   return (
     <>
+      <div>---App---</div>
       <div>
         count: {count}, foo: {foo}
       </div>
@@ -31,7 +28,9 @@ const App: React.FC = () => {
       >
         addx 1{loading ? '...' : ''}
       </button>
+      <div>---Counter---</div>
       <Counter />
+      <div>---CounterClass---</div>
       <CounterClass />
     </>
   );

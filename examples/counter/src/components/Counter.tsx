@@ -1,18 +1,17 @@
 import React from 'react';
 
-import { useSelector, PickState } from 'hodux';
+import { useSelector } from 'hodux';
 
 import counter from '../counter';
 
-type Store = PickState<typeof counter>;
-
 const Counter: React.FC = () => {
   // useSelector(counter, selector, { equals, debugger });
-  const { count, foo, loading, m } = useSelector(counter, s => ({
-    count: s.state.count,
-    foo: s.state.nested.foo,
-    loading: s.loading,
-    m: s.m.has(1),
+  const { count, foo, loading, m } = useSelector(() => ({
+    count: counter.state.count,
+    foo: counter.state.nested.foo,
+    loading: counter.loading,
+    m: counter.m.has(1),
+    // sys: Symbol('#sys')
   }));
   console.log('[Counter render]');
 

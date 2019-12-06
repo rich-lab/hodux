@@ -1,11 +1,11 @@
 import React, { Component } from 'react';
-import { connect, PickState } from 'hodux';
+import { connect, Config } from 'hodux';
 
 import counter from '../counter';
 
-const selector = (store: PickState<typeof counter>) => ({
-  c: store.c,
-  count: store.state.count,
+const selector = () => ({
+  c: counter.c,
+  count: counter.state.count
 });
 
 type Props = ReturnType<typeof selector>;
@@ -26,4 +26,10 @@ class Counter extends Component<Props> {
   }
 }
 
-export default connect(counter, selector)(Counter);
+const config: Config<Props> = {
+  debugger(e) {
+    if (e.type === 'set') console.log('[SET]', e.key, e.oldValue, e.value);
+  }
+};
+
+export default connect(selector, config)(Counter);

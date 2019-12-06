@@ -7,7 +7,7 @@ before_script:
   - npm run build
 
 script:
-  - npm run ci
+  - npm run test:cov
 
 after_success:
   - npm run coveralls

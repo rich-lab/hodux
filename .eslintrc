@@ -47,7 +47,6 @@
     "arrow-parens": "off",
     "prefer-object-spread": "off",
     "no-console": "off",
-    "no-shadow": "off",
     "no-underscore-dangle": "off",
     "no-use-before-define": "off",
     "no-unused-vars": "off",

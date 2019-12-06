@@ -7,7 +7,7 @@
     "@types/react": "^16.9.11",
     "@types/react-dom": "^16.9.4",
     "fast-deep-equal": "^2.0.1",
-    "hodux": "^0.0.2",
+    "hodux": "latest",
     "react": "^16.12.0",
     "react-dom": "^16.12.0",
     "react-scripts": "^3.2.0",

@@ -1,11 +1,9 @@
 import React, { useContext, useEffect, useLayoutEffect, useReducer, useRef } from 'react';
-import { observe, unobserve, isObservable } from '@nx-js/observer-util';
-import invariant from 'invariant';
+import { observe, unobserve } from '@nx-js/observer-util';
 
 import { HoduxContext } from './Config';
-import { isFunction } from './utils';
-
-import { Config, Selector } from './types';
+import { tryClone } from './utils';
+import { Config, Selector, UnwrapValue } from './types';
 
 // @see react-redux
 const useIsomorphicLayoutEffect = typeof window !== 'undefined' ? useLayoutEffect : useEffect;
@@ -14,13 +12,11 @@ const refEquality = (a: unknown, b: unknown) => a === b;
 /**
  * A hook to access the state of a hodux store.
  *
- * useSelector accepts three parameters:
+ * useSelector accepts two parameters:
  *
- * - the first parameter is a reactived store returns by store()
+ * - the first parameter is a selector function familiar to useSelector() in react-redux which is called with the passed store
  *
- * - the second parameter is a selector function familiar to useSelector() in react-redux which is called with the passed store
- *
- * - the last one is an optional config object
+ * - the second one is an optional config object
  *
  *    - equals: the compare function between previous selected value and the next selected value, the defalut is equality
  *
@@ -43,40 +39,50 @@ const refEquality = (a: unknown, b: unknown) => a === b;
  *   inc() { counter.num += 1; }
  * })
  *
- * export const Counter = () => {
- *   const num = useSelector(counter, state => state.num)
- *   return <div onClick={counter.inc}>{num}</div>
+ * export const Counter = ({ baseNum }) => {
+ *   const total = useSelector(() => (counter.num + baseNum))
+ *   return <div onClick={counter.inc}>{total}</div>
  * }
  */
-export default function useSelector<Store extends object, SelectedValue = any>(
-  store: Store,
-  selector: Selector<Store, SelectedValue>,
-  config?: Config<SelectedValue>,
-): SelectedValue {
-  invariant(isObservable(store), `store ${store} has not created!`);
-
+export default function useSelector<V>(
+  selector: Selector<V>,
+  config?: Config<V>,
+): UnwrapValue<V> {
   const globalConfig = useContext(HoduxContext);
-  const cfg = Object.assign({ equals: refEquality }, globalConfig, config || {});
-
-  invariant(isFunction(cfg.equals), 'equals should be function!');
-
+  const equals = (config || globalConfig || {}).equals || refEquality;
+  const debuggerFn = (config || globalConfig || {}).debugger;
   const [, forceRender] = useReducer(s => s + 1, 0);
-  const reactionRef: React.MutableRefObject<Function | undefined> = useRef();
-  const vRef: React.MutableRefObject<any> = useRef();
+  const reactionRef: React.MutableRefObject<Function> = useRef();
+  const vRef: React.MutableRefObject<V | V[]> = useRef();
 
   if (!reactionRef.current) {
-    reactionRef.current = observe(() => (vRef.current = selector(store)), {
-      scheduler: (reaction: Function) => {
-        const newValue = selector(store);
+    reactionRef.current = observe(() => {
+      const selectedValue = selector();
+
+      // invariant(
+      //   !(selectedValue === null || typeof selectedValue === 'undefined'), 
+      //   'selector should returns value'
+      // );
+
+      // for diff
+      vRef.current = tryClone(selectedValue);
+
+      return selectedValue;
+    }, {
+      scheduler: () => {
+        const newValue = selector();
 
         // TODO: diff logger
-        // console.log('prev %j, curr: %j', vRef.current, newValue);
+        // console.log(
+        //   'oldValue %j, newValue: %j, equalName: %s, isEqual: %s',
+        //   vRef.current, newValue, equals.name, equals(vRef.current, newValue)
+        // );
 
-        if (!cfg.equals(vRef.current, newValue)) {
+        if (!equals(vRef.current, newValue)) {
           forceRender({});
         }
       },
-      debugger: cfg.debugger,
+      debugger: debuggerFn
     });
   } else {
     reactionRef.current();
@@ -91,5 +97,5 @@ export default function useSelector<Store extends object, SelectedValue = any>(
     };
   }, []);
 
-  return vRef.current;
+  return vRef.current as UnwrapValue<V>;
 }

@@ -2,7 +2,7 @@ import React, { createContext, createElement, memo } from 'react';
 
 import { Config, HoduxConfigProps } from './types';
 
-export const HoduxContext = createContext<Config>({});
+export const HoduxContext = createContext<Config<any>>({});
 
 HoduxContext.displayName = 'HoduxContext';
 
@@ -17,7 +17,7 @@ HoduxContext.displayName = 'HoduxContext';
  *  document.getElementById('root')
  * );
  */
-export const HoduxConfig: React.FC<HoduxConfigProps> = memo(props => {
+export const HoduxConfig: React.FC<HoduxConfigProps<any>> = memo(props => {
   const value = { equals: props.equals, debugger: props.debugger };
 
   return createElement(HoduxContext.Provider, { value }, props.children);

@@ -2,8 +2,8 @@ import store from './createStore';
 import useSelector from './useSelector';
 import { connect } from './connect';
 import { HoduxConfig } from './Config';
-import { batch, shallowEqual } from './utils';
-import { DebuggerEvent, Config, HoduxConfigProps, Selector, PickState } from './types';
+import { batch } from './utils';
+import { Debugger, Equals, Config, HoduxConfigProps, Selector } from './types';
 
 export {
   HoduxConfig,
@@ -11,10 +11,11 @@ export {
   useSelector,
   connect,
   batch,
-  shallowEqual,
-  DebuggerEvent,
+  
+  // types
+  Debugger,
+  Equals,
   Config,
   HoduxConfigProps,
   Selector,
-  PickState,
 };

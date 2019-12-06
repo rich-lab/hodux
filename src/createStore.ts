@@ -1,14 +1,22 @@
 import { observable } from '@nx-js/observer-util';
+import invariant from 'invariant';
 
-import { rawToProxy } from './internals';
+import { rawToProxy/* , proxyToRaw */ } from './internals';
+import { isObject, isPlainObject } from './utils';
 
-export default function createStore<M extends object>(model: M): M {
-  let store = rawToProxy.get(model);
+function hasModel(model: unknown): model is object {
+  return isObject(model) && rawToProxy.has(model);
+}
 
-  if (store) return store;
+export default function createStore<M extends object = {}>(model: M): M {
+  invariant(isPlainObject(model), 'model should be plain object!');
 
-  store = observable(model);
+  if (hasModel(model)) return rawToProxy.get(model);
+
+  const store = observable(model);
+
   rawToProxy.set(model, store);
+  // proxyToRaw.set(store, model);
 
   return store;
 }

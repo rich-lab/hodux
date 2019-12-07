@@ -34,7 +34,7 @@ const counter = store({
 // select state from store
 export default function Counter(props) {
   const num = useSelector(() => counter.num);
-  // or you can do some compute within component
+  // or you can do some compute in component
   // const total = useSelector(() => counter.num + props.step);
 
   return <div onClick={counter.inc}>The num:{num}</div>;
@@ -95,7 +95,7 @@ export default (initalCount = 0) => {
 
 ### useSelector(selector, config?)
 
-Extracts state from store as needed, **the components will re-render only if any selected state changes**, maybe it's the main difference with react-redux's useSelector(), because react-redux call selector when any store state changes even if not selected state at all(react-redux internal decides if makes re-render), so you do't need to use any cache selector library(such as reselect) with useSelector.
+Extracts state from store as needed, the components will **re-render only if the selected state changes**, maybe it's the main difference with react-redux's useSelector(), because react-redux call selector whenever store state changes even not selected state at all(react-redux internal decides if makes re-render), so you do't need to use any cache selector library(such as reselect) with useSelector.
 
 `useSelector` accepts two parameters:
 

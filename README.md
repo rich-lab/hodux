@@ -13,9 +13,9 @@ The reactivity state management for React.
 
 ## Features
 
-- Observable store: the state flow is easy enough.
-- State selectable: extract state as needed, the components will not re-render unless any selected state changes.
-- Perfectly typescript support.
+- **Observable store**: the state flow is easy enough.
+- **State selectable**: extract state as needed, the components will not re-render unless any selected state changes.
+- **Perfectly typescript support**.
 
 ## Introduction
 
@@ -28,25 +28,23 @@ import { store, useSelector } from 'hodux';
 // create observable store
 const counter = store({
   num: 0,
-  inc() { counter.num += 1; },
-  async incx() {
-    await wait(1000);
-    counter.num += 1;
-  }
+  inc() { counter.num += 1; }
 });
 
-// Hooks API: familiar to react-redux!
-export default function Counter() {
+// select state from store
+export default function Counter(props) {
   const num = useSelector(() => counter.num);
+  // or you can do some compute within component
+  // const total = useSelector(() => counter.num + props.step);
 
-  return <div onClick={counter.inc}>{num}</div>;
+  return <div onClick={counter.inc}>The num:{num}</div>;
 }
 ```
 
 ## Install
 
 ```sh
-npm install -S hodux
+npm install --save hodux
 # or
 $ yarn add hodux
 ```
@@ -57,9 +55,47 @@ $ yarn add hodux
 
 Creates and returns a proxied observable object by the passed model(object), the original model object is not modified. It's just a wrapper of [observable()](https://github.com/nx-js/observer-util#proxy--observableobject).
 
+create store object:
+
+```js
+// stores/counter.js
+const counter = store({
+  count: 0,
+  inc() {
+    counter.count++;
+  },
+  async incx() {
+    await wait(1000);
+    counter.count += 1;
+  }
+});
+
+export default counter;
+```
+
+lazy creates:
+
+```js
+// stores/counter.js
+export default (initalCount = 0) => {
+  const state = store({ count: initalCount });
+
+  function inc() {
+    state += n;
+  }
+
+  async function incx() {
+    await wait(1000);
+    state.count += 1;
+  }
+
+  return { state, inc, incx }
+}
+```
+
 ### useSelector(selector, config?)
 
-Extracts state from store as needed, **the components will re-render only if any selected state changes**, maybe it's the main difference with react-redux's useSelector(), because react-redux call selector when any store state changes even if not selected state at all(react-redux internal decides if makes re-render), so you do't need to use any cache selector library with useSelector.
+Extracts state from store as needed, **the components will re-render only if any selected state changes**, maybe it's the main difference with react-redux's useSelector(), because react-redux call selector when any store state changes even if not selected state at all(react-redux internal decides if makes re-render), so you do't need to use any cache selector library(such as reselect) with useSelector.
 
 `useSelector` accepts two parameters:
 
@@ -166,7 +202,7 @@ ReactDOM.render(
 
 ### batch(fn: Function)
 
-The wrapper of React-DOM's `unstable_batchedUpdates`, to prevent multiples render caused by multiple synchronous store mutations. If you experience performance issues you can batch changes manually with the batch function.
+A wrapper of `unstable_batchedUpdates`, to prevent multiples render caused by multiple synchronous store mutations. If you experience performance issues you can batch changes manually with `batch`.
 
 > NOTE: The React team plans to improve render batching in the future. The batch API may be removed in the future in favor of React's own batching.
 

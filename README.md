@@ -7,7 +7,7 @@
 [![size](https://badgen.net/bundlephobia/minzip/hodux@latest)](https://bundlephobia.com/result?p=hodux@latest)
 ![React](https://img.shields.io/npm/dependency-version/hodux/peer/react?logo=react)
 
-The reactivity state management for React.
+The reactivity state management for React. Made with :heart: and ES6 Proxies.
 
 > Inspired by [react-easy-state](https://github.com/solkimicreb/react-easy-state) but use friendly APIs for React Hooks.
 

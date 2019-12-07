@@ -108,6 +108,7 @@ export type UnwrapValue<T> = {
 }[T extends BasicTypes ? 'basic'
   : T extends Array<any> ? 'array'
   : T extends object ? 'object' : never]
+
 /**
  * Store selector function interface
  */

@@ -14,16 +14,15 @@ const refEquality = (a: unknown, b: unknown) => a === b;
  *
  * useSelector accepts two parameters:
  *
- * - the first parameter is a selector function familiar to useSelector() in react-redux which is called with the passed store
+ * - the first parameter is a selector function which works as observer API in reactivity system. It subscribes the selected state and equals the previous returned value with the next one to decide if or not re-render. Maybe you can do some compute with state in useSelector and takes result as the return value.
  *
- * - the second one is an optional config object
+ * - the second is an optional config object
  *
- *    - equals: the compare function between previous selected value and the next selected value, the defalut is equality
+ *    - equals: the compare function between previous return value and the next return value, the defalut is equality
  *
  *    - debugger: the debugger function passed to `@nx-js/observer-util`
  *
  *
- * @param {Object} store the obversed store
  * @param {Function} selector the selector function
  * @param {Object=} config the config for current component
  *
@@ -58,11 +57,6 @@ export default function useSelector<V>(
   if (!reactionRef.current) {
     reactionRef.current = observe(() => {
       const selectedValue = selector();
-
-      // invariant(
-      //   !(selectedValue === null || typeof selectedValue === 'undefined'), 
-      //   'selector should returns value'
-      // );
 
       // for diff
       vRef.current = tryClone(selectedValue);

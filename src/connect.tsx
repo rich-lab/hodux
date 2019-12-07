@@ -7,7 +7,7 @@ import useSelector from './useSelector';
 import { Config, Selector, InferableComponentEnhancerWithProps } from './types';
 
 /**
- * Connects a React class component to a hodux store.
+ * Connects a React class component to some hodux store.
  *
  * connect accepts two parameters:
  * 
@@ -19,6 +19,11 @@ import { Config, Selector, InferableComponentEnhancerWithProps } from './types';
  *
  *    - debugger: the debugger function passed to `@nx-js/observer-util`
  *
+ * @param {Function} selectorWithProps the selector function
+ * @param {Object=} config the config for current component
+ *
+ * @returns {ConnectedComponent} the connected class component
+ * 
  * @example
  * const counter = store({
  *   num: 0,

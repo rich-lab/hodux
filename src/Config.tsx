@@ -7,7 +7,7 @@ export const HoduxContext = createContext<Config<any>>({});
 HoduxContext.displayName = 'HoduxContext';
 
 /**
- * Provider the global config for all useSelector() and connect()
+ * The global config Provider.
  *
  * @example
  * ReactDOM.render(

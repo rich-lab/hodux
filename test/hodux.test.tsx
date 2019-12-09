@@ -6,12 +6,11 @@ import {
   waitForDomChange
 } from '@testing-library/react';
 import deepEqual from 'fast-deep-equal';
-import React, { Component, ComponentClass } from 'react';
+import React, { Component } from 'react';
 import { isObservable, raw } from '@nx-js/observer-util';
 
 import { store, useSelector, connect, HoduxConfig, batch } from '../src';
-import { ConnectedComponent, Debugger } from '../src/types';
-// import { useSelector2 } from '../src/useSelector';
+import { Debugger } from '../src/types';
 
 const wait = (ms: number) => new Promise(resolve => setTimeout(resolve, ms || 1));
 
@@ -82,235 +81,320 @@ describe('useSelector()', () => {
   beforeEach(createStore);
   afterEach(cleanupAll);
 
-  it('basic usage should work', async () => {
-    const Counter = () => {
-      const c = useSelector(() => testStore.n);
-
-      return <div data-testid="a" onClick={testStore.incx}>c:{c}</div>;
-    };
-    const { container, getByTestId } = render(<Counter />);
-    const div = getByTestId('a');
-
-    expect(div.textContent).toEqual('c:0');
-    act(testStore.inc);
-    expect(div.textContent).toEqual('c:1');
-    // trigger method as DOM event handler
-    fireEvent.click(div);
-    await waitForDomChange({ container });
-    expect(div.textContent).toEqual('c:2');
-    // manual trigger async method
-    await act(async () => await testStore.incx());
-    expect(div.textContent).toEqual('c:3');
-  });
-
-  it('should no re-render when selector returns null or undefined', () => {
-    let c1 = 0;
-    let c2 = 0;
-    const Null = () => {
-      useSelector(() => { console.log(testStore.n); return null; }); // null === null
-      c1++;
-      return <div />;
-    };
-    const Undefined = () => {
-      useSelector(() => { console.log(testStore.n); return undefined; }); // undefined === undefined
-      c2++;
-      return <div />;
-    };
-
-    render(<><Null /><Undefined/></>);
-    expect(c1).toEqual(1);
-    expect(c2).toEqual(1);
-
-    act(testStore.inc);
-    expect(c1).toEqual(1);
-    expect(c2).toEqual(1);
-  });
-
-  it('select store self should work', () => {
-    const App = () => {
-      const { n } = useSelector(() => testStore);
-      return <div data-testid="a">{n}</div>;
-    };
-
-    const { getByTestId } = render(<App />);
-    const div = getByTestId('a');
-
-    act(testStore.inc);
-    expect(testStore.n).toEqual(1);
-    expect(div.textContent).toEqual('1');
-  });
-
-  it('re-render shoule be controlled (basic types)', async () => {
-    const jestFn1 = jest.fn();
-    const jestFn2 = jest.fn();
-    const Parent = () => {
-      jestFn1();
-      useSelector(() => testStore);
-      return (
-        <>
-          <Child />
-        </>
-      );
-    };
-    const Child = () => {
-      jestFn2();
-      useSelector(() => testStore.n);
-      return <div />;
-    };
-
-    render(<Parent />);
-    expect(jestFn1).toHaveBeenCalledTimes(1);
-    expect(jestFn2).toHaveBeenCalledTimes(1);
-
-    // changing state outof store should work
-    act(() => { testStore.n += 1 });
-    expect(jestFn1).toHaveBeenCalledTimes(2);
-    expect(jestFn2).toHaveBeenCalledTimes(2);
-
-    await act(async () => await testStore.incx());
-    expect(testStore.n).toEqual(2);
-    expect(jestFn1).toHaveBeenCalledTimes(3);
-    expect(jestFn2).toHaveBeenCalledTimes(3);
-  });
-
-  it('re-render shoule be controlled (array and object types)', async () => {
-    let c1 = 0;
-    let c2 = 0;
-    const Child = () => {
-      c1++;
-      useSelector(() => testStore.o);
-      return <div />;
-    };
-    const Parent = () => {
-      c2++;
-      useSelector(() => ({ a: testStore.a, o: testStore.o }));
-      return <><Child /></>;
-    };
-
-    render(<Parent />);
-    expect(c1).toEqual(1);
-    expect(c2).toEqual(1);
-
-    act(() => { testStore.o = { n: 1, o: { s: 'ttt'}, a: [1] } });
-    expect(c1).toEqual(2);
-    expect(c2).toEqual(2);
-
-    act(() => { delete testStore.o.o.s; testStore.o.a.push(2); });
-    expect(c1).toEqual(3);
-    expect(c2).toEqual(3);
-
-    act(() => { testStore.a.push(1) });
-    // force re-render by Parent render, use `useMemo()` or `memo()` to prevent it!
-    expect(c1).toEqual(4);
-    expect(c2).toEqual(4);
-  });
-
-  it('re-render shoule be controlled (collection types)', async () => {
-    let c1 = 0;
-    let c2 = 0;
-    let n = 0;
-    let l = 0;
-    const Child = () => {
-      const o: any = useSelector(() => testStore.map.get('o'));
-      if (o?.n) n += o.n;
-      c1++;
-      return <div />;
-    };
-    const Parent = () => {
-      const r: any = useSelector(() => ({ l: testStore.set.size, o: testStore.map.get('o') }));
-      if (r.o?.n) n += r.o.n;
-      if (r.l) l = r.l;
-      c2++;
-      return <><Child /></>;
-    };
-
-    render(<Parent />);
-    expect(n).toEqual(0);
-    expect(l).toEqual(0);
-
-    act(() => { testStore.map.set('o', { n: 1 }) });
-    expect(testStore.map.get('o').n).toEqual(1);
-    expect(n).toEqual(2);
-    expect(l).toEqual(0);
-    expect(c1).toEqual(2);
-    expect(c2).toEqual(2);
-
-    act(() => { testStore.set.add(1);testStore.set.add(2); });
-    expect(n).toEqual(4);
-    expect(l).toEqual(2);
-    expect(c1).toEqual(3);
-    expect(c2).toEqual(3);
-  });
-
-  it('equals should work in effects handler', async () => {
-    let c1 = 0;
-    let c2 = 0;
-    let c3 = 0;
-    const selector = () => testStore.o;
-    const RefEquality = () => {
-      c1++;
-      useSelector(selector);
-      return <div />;
-    };
-    const DeepEqual = () => {
-      c2++;
-      useSelector(selector, { equals: deepEqual });
-      return <div />;
-    };
-    const Parent = () => {
-      c3++;
-      useSelector(() => ({ a: testStore.a, o: testStore.o }));
-      return <><RefEquality /><DeepEqual /></>;
-    };
-
-    render(<Parent />);
-    expect(c1).toEqual(1);
-    expect(c2).toEqual(1);
-    expect(c3).toEqual(1);
-
-    // act(() => { testStore.o.n += 1; });
-
-    await act(async () => {
-      await wait(10);
-      testStore.o.n += 1;
+  describe('selector', () => {
+    it('select basic should work', async () => {
+      const Counter = () => {
+        const c = useSelector(() => testStore.n);
+  
+        return <div data-testid="a" onClick={testStore.incx}>c:{c}</div>;
+      };
+      const { container, getByTestId } = render(<Counter />);
+      const div = getByTestId('a');
+  
+      expect(div.textContent).toEqual('c:0');
+      act(testStore.inc);
+      expect(div.textContent).toEqual('c:1');
+      // trigger method as DOM event handler
+      fireEvent.click(div);
+      await waitForDomChange({ container });
+      expect(div.textContent).toEqual('c:2');
+      // manual trigger async method
+      await act(async () => await testStore.incx());
+      expect(div.textContent).toEqual('c:3');
     });
-    expect(c1).toEqual(3); // take notice here!!
-    expect(c2).toEqual(2);
-    expect(c3).toEqual(2);
+  
+    it('select array should work', async () => {
+      const Basic = () => {
+        const arr = useSelector(() => testStore.a);
+  
+        return <div data-testid="a">{arr.join(',')}</div>;
+      };
+      const Nested = () => {
+        const [item1 = {}, item2 = {}] = useSelector(() => testStore.arr || []);
+  
+        return <div data-testid="b">{item1.s},{item2.s}</div>;
+      };
+      const { getByTestId } = render(<><Basic /><Nested /></>);
+      let div = getByTestId('a');
+  
+      act(() => { testStore.a.push(1,2); });
+      expect(div.textContent).toEqual('1,2');
+  
+      act(() => {
+        for (let i = 0; i < testStore.a.length; i++) {
+          testStore.a[i] *= 2;
+        }
+      });
+      expect(div.textContent).toEqual('2,4');
+
+      // nested
+      div = getByTestId('b');
+      act(() => { testStore.arr = [{ s: 's1' }, { s: 's2' }]; });
+      expect(div.textContent).toEqual('s1,s2');
+  
+      act(() => {
+        const arr = testStore.arr.slice();
+
+        for (let i = 0; i < arr.length; i++) {
+          arr[i].s += '!';
+        }
+
+        testStore.arr = arr;
+      });
+      expect(div.textContent).toEqual('s1!,s2!');
+    });
+  
+    it('select object(or store self) should work', () => {
+      const SelectSelf = () => {
+        const { n } = useSelector(() => testStore);
+        return <div data-testid="a">{n}</div>;
+      };
+      const SelectObject = () => {
+        const { n, o: { foo } } = useSelector(() => testStore.o);
+        return <div data-testid="b">{n}:{foo}</div>;
+      };
+  
+      const { getByTestId } = render(<><SelectSelf /><SelectObject /></>);
+      const aDiv = getByTestId('a');
+      const bDiv = getByTestId('b');
+  
+      expect(bDiv.textContent).toEqual('0:');
+  
+      act(testStore.inc);
+      expect(aDiv.textContent).toEqual('1');
+  
+      act(() => { 
+        testStore.o.n += 1;
+        testStore.o.o.foo = 'bar';
+      });
+      expect(bDiv.textContent).toEqual('1:bar');
+    });
+
+    it('select from multiple store should work', async () => {
+      let c = 0;
+      const stepStore = store({ step: 1, other: '' });
+      const MultStore = () => {
+        c++;
+        const total = useSelector(() => testStore.n + stepStore.step);
+        return <div data-testid="a">{total}</div>;
+      };
+      const { getByTestId } = render(<MultStore />);
+      const div = getByTestId('a');
+
+      expect(c).toEqual(1);
+      expect(div.textContent).toEqual('1'); // 0 + 1
+
+      act(testStore.inc);
+      expect(c).toEqual(2);
+      expect(div.textContent).toEqual('2'); // 1 + 1
+
+      act(() => { stepStore.step = 10; });
+      expect(c).toEqual(3);
+      expect(div.textContent).toEqual('11'); // 1 + 10
+
+      act(() => { stepStore.other = 'xxx'; });
+      expect(c).toEqual(3); // should not re-render because MultStore has not selected the `other` state!
+    });
+  });
+  
+  describe('re-render', () => {
+    it('re-render shoule be controlled (basic types)', async () => {
+      const jestFn1 = jest.fn();
+      const jestFn2 = jest.fn();
+      const Parent = () => {
+        jestFn1();
+        useSelector(() => testStore);
+        return (
+          <>
+            <Child />
+          </>
+        );
+      };
+      const Child = () => {
+        jestFn2();
+        useSelector(() => testStore.n);
+        return <div />;
+      };
+  
+      render(<Parent />);
+      expect(jestFn1).toHaveBeenCalledTimes(1);
+      expect(jestFn2).toHaveBeenCalledTimes(1);
+  
+      // changing state outof store should work
+      act(() => { testStore.n += 1 });
+      expect(jestFn1).toHaveBeenCalledTimes(2);
+      expect(jestFn2).toHaveBeenCalledTimes(2);
+  
+      await act(async () => await testStore.incx());
+      expect(testStore.n).toEqual(2);
+      expect(jestFn1).toHaveBeenCalledTimes(3);
+      expect(jestFn2).toHaveBeenCalledTimes(3);
+    });
+  
+    it('re-render shoule be controlled (array and object types)', async () => {
+      let c1 = 0;
+      let c2 = 0;
+      const Child = () => {
+        c1++;
+        useSelector(() => testStore.o);
+        return <div />;
+      };
+      const Parent = () => {
+        c2++;
+        useSelector(() => ({ a: testStore.a, o: testStore.o }));
+        return <><Child /></>;
+      };
+  
+      render(<Parent />);
+      expect(c1).toEqual(1);
+      expect(c2).toEqual(1);
+  
+      act(() => { testStore.o = { n: 1, o: { s: 'ttt'}, a: [1] } });
+      expect(c1).toEqual(2);
+      expect(c2).toEqual(2);
+  
+      act(() => { delete testStore.o.o.s; testStore.o.a.push(2); });
+      expect(c1).toEqual(3);
+      expect(c2).toEqual(3);
+  
+      act(() => { testStore.a.push(1) });
+      // force re-render by Parent render, use `useMemo()` or `memo()` to prevent it!
+      expect(c1).toEqual(4);
+      expect(c2).toEqual(4);
+    });
+  
+    it('re-render shoule be controlled (collection types)', async () => {
+      let c1 = 0;
+      let c2 = 0;
+      let n = 0;
+      let l = 0;
+      const Child = () => {
+        const o: any = useSelector(() => testStore.map.get('o'));
+        if (o?.n) n += o.n;
+        c1++;
+        return <div />;
+      };
+      const Parent = () => {
+        const r: any = useSelector(() => ({ l: testStore.set.size, o: testStore.map.get('o') }));
+        if (r.o?.n) n += r.o.n;
+        if (r.l) l = r.l;
+        c2++;
+        return <><Child /></>;
+      };
+  
+      render(<Parent />);
+      expect(n).toEqual(0);
+      expect(l).toEqual(0);
+  
+      act(() => { testStore.map.set('o', { n: 1 }) });
+      expect(testStore.map.get('o').n).toEqual(1);
+      expect(n).toEqual(2);
+      expect(l).toEqual(0);
+      expect(c1).toEqual(2);
+      expect(c2).toEqual(2);
+  
+      act(() => { testStore.set.add(1);testStore.set.add(2); });
+      expect(n).toEqual(4);
+      expect(l).toEqual(2);
+      expect(c1).toEqual(3);
+      expect(c2).toEqual(3);
+    });
+
+    it('should not re-render when selector returns null or undefined', () => {
+      let c1 = 0;
+      let c2 = 0;
+      const Null = () => {
+        useSelector(() => { console.log(testStore.n); return null; }); // null === null
+        c1++;
+        return <div />;
+      };
+      const Undefined = () => {
+        useSelector(() => { console.log(testStore.n); return undefined; }); // undefined === undefined
+        c2++;
+        return <div />;
+      };
+  
+      render(<><Null /><Undefined/></>);
+      expect(c1).toEqual(1);
+      expect(c2).toEqual(1);
+  
+      act(testStore.inc);
+      expect(c1).toEqual(1);
+      expect(c2).toEqual(1);
+    });
   });
 
-  it('batch should work in effects handler', async () => {
-    testStore.loading = false;
-    testStore.loadAsync = async (isBatch = false) => {
-      testStore.loading = true;
-      await wait(1000);
-      if (isBatch) {
-        batch(update);
-      } else {
-        update();
+  describe('effects', () => {
+    it('equals should work in asynchronous handler', async () => {
+      let c1 = 0;
+      let c2 = 0;
+      let c3 = 0;
+      const selector = () => testStore.o;
+      const RefEquality = () => {
+        c1++;
+        useSelector(selector);
+        return <div />;
+      };
+      const DeepEqual = () => {
+        c2++;
+        useSelector(selector, { equals: deepEqual });
+        return <div />;
+      };
+      const Parent = () => {
+        c3++;
+        useSelector(() => ({ a: testStore.a, o: testStore.o }));
+        return <><RefEquality /><DeepEqual /></>;
+      };
+  
+      render(<Parent />);
+      expect(c1).toEqual(1);
+      expect(c2).toEqual(1);
+      expect(c3).toEqual(1);
+  
+      // act(() => { testStore.o.n += 1; });
+  
+      await act(async () => {
+        await wait(10);
+        testStore.o.n += 1;
+      });
+      expect(c1).toEqual(3); // take notice here!!
+      expect(c2).toEqual(2);
+      expect(c3).toEqual(2);
+    });
+  
+    it('batch should work in asynchronous handler', async () => {
+      testStore.loading = false;
+      testStore.loadAsync = async (isBatch = false) => {
+        testStore.loading = true;
+        await wait(1000);
+        if (isBatch) {
+          batch(update);
+        } else {
+          update();
+        }
+  
+        function update() {
+          testStore.loading = false;
+          testStore.n += 1;
+        }
       }
-
-      function update() {
-        testStore.loading = false;
-        testStore.n += 1;
-      }
-    }
-
-    let c = 0;
-    const App = () => {
-      c++;
-      useSelector(() => ({ n: testStore.n, loading: testStore.loading }));
-      return <div />;
-    };
-
-    render(<App />);
-    expect(c).toEqual(1);
-
-    await act(async () => { await testStore.loadAsync() });
-    expect(c).toEqual(4); // step is 3
-
-    await act(async () => { await testStore.loadAsync(true) });
-    expect(c).toEqual(6); // step is 2
+  
+      let c = 0;
+      const App = () => {
+        c++;
+        useSelector(() => ({ n: testStore.n, loading: testStore.loading }));
+        return <div />;
+      };
+  
+      render(<App />);
+      expect(c).toEqual(1);
+  
+      await act(async () => { await testStore.loadAsync() });
+      expect(c).toEqual(4); // step is 3
+  
+      await act(async () => { await testStore.loadAsync(true) });
+      expect(c).toEqual(6); // step is 2
+    });
   });
 });
 

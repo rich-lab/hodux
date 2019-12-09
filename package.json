@@ -31,6 +31,10 @@
     "hoist-non-react-statics": "^3.3.1",
     "invariant": "^2.2.4"
   },
+  "files": [
+    "dist",
+    "src"
+  ],
   "devDependencies": {
     "@testing-library/dom": "^6.4.1",
     "@testing-library/react": "^9.2.0",

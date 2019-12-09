@@ -1,4 +1,6 @@
-# hodux
+English | [简体中文](./README.zh-CN.md)
+
+# Hodux
 
 [![NPM version](https://img.shields.io/npm/v/hodux.svg?style=flat)](https://npmjs.org/package/hodux)
 [![Build Status](https://img.shields.io/travis/react-kit/hodux.svg?style=flat)](https://travis-ci.org/react-kit/hodux)
@@ -7,31 +9,30 @@
 [![size](https://badgen.net/bundlephobia/minzip/hodux@latest)](https://bundlephobia.com/result?p=hodux@latest)
 ![React](https://img.shields.io/npm/dependency-version/hodux/peer/react?logo=react)
 
-The reactivity state management for React. Made with :heart: and ES6 Proxies.
+The reactivity state management for React. Made with :heart: and ES6 Proxy API.
 
-> Inspired by [react-easy-state](https://github.com/solkimicreb/react-easy-state) but use friendly APIs for React Hooks.
+> Inspired by [react-easy-state](https://github.com/solkimicreb/react-easy-state) but more friendly for React Hooks.
 
 ## Features
 
 - **Observable store**: the state flow is easy enough.
 - **State selectable**: extract state as needed, the components will not re-render unless any selected state changes.
-- **Perfectly typescript support**.
+- **Perfectly TypeScript support**.
 
 ## Introduction
 
 Hodux is a reactivity state management solution for React which supports both Hooks and Class, it has only 2 core APIs and quit easy to learn.
 
 ```js
-import React from 'react';
 import { store, useSelector } from 'hodux';
 
-// create observable store
+// create store(Observable)
 const counter = store({
   num: 0,
   inc() { counter.num += 1; }
 });
 
-// select state from store
+// select state from store(Dependency collection)
 export default function Counter(props) {
   const num = useSelector(() => counter.num);
   // or you can do some compute in component
@@ -51,11 +52,12 @@ $ yarn add hodux
 
 ## API
 
-### store(model)
+### `store(model)`
 
-Creates and returns a proxied observable object by the passed model(object), the original model object is not modified. It's just a wrapper of [observable()](https://github.com/nx-js/observer-util#proxy--observableobject).
+- Signature: `function store<M extends object>(model: M): M`
+- Description: creates and returns a proxied observable object by the passed model(object), the original model object is not modified. It's just a wrapper of [observable()](https://github.com/nx-js/observer-util#proxy--observableobject).
 
-create store object:
+create store with object-based model:
 
 ```js
 // stores/counter.js
@@ -93,9 +95,23 @@ export default (initalCount = 0) => {
 }
 ```
 
-### useSelector(selector, config?)
+local store(create store inner components):
 
-Extracts state from store as needed, the components will **re-render only if the selected state changes**, maybe it's the main difference with react-redux's useSelector(), because react-redux call selector whenever store state changes even not selected state at all(react-redux internal decides if makes re-render), so you do't need to use any cache selector library(such as reselect) with useSelector.
+> Maybe use native APIs(useState or useReducer) will be better, the goal of hodux is shared store between components.
+
+```js
+export default function Counter() {
+  const counter = store({ count: 0 });
+  const count = useSelector(() => counter.count);
+
+  return <div onClick={() => counter.count++}>{count}</div>;
+}
+```
+
+### `useSelector(selector, config?)`
+
+- Signature: `function useSelector<V>(selector: Selector<V>, config?: Config<V>): V`
+- Description: extracts state from store as needed, the components will **re-render only if the selected state changes**, maybe it's the main difference with react-redux's useSelector(), because react-redux call selector whenever store state changes even not selected at all(react-redux internal decides if makes re-render), so you do't need to use any cache selector library(such as reselect) with useSelector.
 
 `useSelector` accepts two parameters:
 
@@ -128,11 +144,27 @@ useSelector(() => {
 }, { equals: _.equals }); // use lodash/isEqual
 ```
 
-### connect(selectorWithProps, config?)
+Select state from multiple stores:
 
-`connect` is a HOC wrapper of `useSelector` which only for class components to connect some store's state with the components.
+```js
+function CompWithMutlStore() {
+  // whenever the `count` from store1 or the `step` from store1 changes the compoent will re-render, so the `result` is always be the newest value
+	const result = useSelector(() => store1.count + store2.step);
+}
+```
 
-connect accepts two parameters:
+### `connect(selector, ownProps?)`
+
+```ts
+function connect<V extends {}, OwnProps = {}>(
+  selector: Selector<V, OwnProps>,
+  config?: Config<V>
+): (classComponent: C) => ConnectedComponent<V, OwnProps>
+```
+
+A HOC wrapper of `useSelector` to connect store state to the class components, and is only for class components.
+
+`connect` accepts two parameters:
 
 - `selectorWithProps(ownProps?)`: familiar to selector, but the difference is selectorWithProps must return object type(such as `mapStateToProps` in react-redux), selectorWithProps accepts the connected component's props as parameter.
 
@@ -181,9 +213,10 @@ const Connected = connect(selectToProps)(Counter);
 render(<Connected step={10} />);
 ```
 
-### <HoduxConfig equal={fn} debugger={fn} />
+### `<HoduxConfig equals={fn} debugger={fn} />`
 
-The global config Provider.
+- Type: `React.FunctionComponent<React.PropsWithChildren<Config<any>>>`
+- Description: The global config Provider.
 
 ```js
 function consoleLogger(e) {
@@ -200,11 +233,12 @@ ReactDOM.render(
 );
 ```
 
-### batch(fn: Function)
+### `batch(fn)`
 
-A wrapper of `unstable_batchedUpdates`, to prevent multiples render caused by multiple synchronous store mutations. If you experience performance issues you can batch changes manually with `batch`.
+- Signature: `function batch(fn: Function) => void`
+- Description: a wrapper of `unstable_batchedUpdates`, to prevent multiples render caused by multiple store mutations in asynchronous handler such as `setTimeout` and `Promise`, etc. If you experience performance issues you can batch changes manually with `batch`.
 
-> NOTE: The React team plans to improve render batching in the future. The batch API may be removed in the future in favor of React's own batching.
+> NOTE: The React team plans to improve render batching in the future. The `batch` API may be removed in the future in favor of React's own batching.
 
 ```js
 const listStore = store({

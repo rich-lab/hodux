@@ -7,7 +7,7 @@ import useSelector from './useSelector';
 import { Config, Selector, InferableComponentEnhancerWithProps } from './types';
 
 /**
- * Connects a React class component to some hodux store.
+ * A HOC wrapper of `useSelector` to connect store state to class components.
  *
  * connect accepts two parameters:
  * 

@@ -154,7 +154,7 @@ export type ConnectedComponent<C extends ComponentClass<any>, P> =
 export type InferableComponentEnhancerWithProps<TInjectedProps, TNeedsProps> = <
   C extends ComponentClass<Matching<TInjectedProps, GetProps<C>>>
 >(
-  classComponent: C,
+  classComponent: C
 ) => ConnectedComponent<
   C,
   Omit<GetProps<C>, keyof Shared<TInjectedProps, GetProps<C>>> & TNeedsProps

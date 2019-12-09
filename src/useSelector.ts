@@ -10,7 +10,7 @@ const useIsomorphicLayoutEffect = typeof window !== 'undefined' ? useLayoutEffec
 const refEquality = (a: unknown, b: unknown) => a === b;
 
 /**
- * A hook to access the state of a hodux store.
+ * Extracts state from store as needed, the components will **re-render only if the selected state changes**
  *
  * useSelector accepts two parameters:
  *

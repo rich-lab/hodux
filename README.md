@@ -16,8 +16,8 @@ The reactivity state management for React. Made with :heart: and ES6 Proxy API.
 ## Features
 
 - **Observable store**: the state flow is easy enough.
-- **State selectable**: extract state as needed, the components will not re-render unless any selected state changes.
-- **Perfectly TypeScript support**.
+- **Consume state with react hook**: select state from store using custom hook as needed, and render optimized.
+- **Perfectly TypeScript support**
 
 ## Introduction
 
@@ -111,11 +111,13 @@ export default function Counter() {
 ### `useSelector(selector, config?)`
 
 - Signature: `function useSelector<V>(selector: Selector<V>, config?: Config<V>): V`
-- Description: extracts state from store as needed, the components will **re-render only if the selected state changes**, maybe it's the main difference with react-redux's useSelector(), because react-redux call selector whenever store state changes even not selected at all(react-redux internal decides if makes re-render), so you do't need to use any cache selector library(such as reselect) with useSelector.
+- Description: extracts state from store as needed, the components will not re-render **unless any selected state changes**.
+
+> Maybe it's the main difference with react-redux's useSelector(), because react-redux call selector whenever store state changes even not selected at all(react-redux internal decides if makes re-render), so you do't need to use any cache selector library(such as reselect) with useSelector.
 
 `useSelector` accepts two parameters:
 
-- the first parameter is a selector function which works as observer API in reactivity system. It subscribes the selected state and equals the previous returned value with the next one to decide if or not re-render. Maybe you can do some compute with state in useSelector and takes result as the return value.
+- the first parameter is a `selector` function which works as observer API in reactivity system. It subscribes the selected state and diff the previous returned value with the next one to decide if or not re-render. Maybe you can do some compute with state in `useSelector` and takes result as the return value.
 
 - the second is an optional config object
   

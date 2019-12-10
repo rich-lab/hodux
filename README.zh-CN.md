@@ -9,7 +9,7 @@
 [![size](https://badgen.net/bundlephobia/minzip/hodux@latest)](https://bundlephobia.com/result?p=hodux@latest)
 ![React](https://img.shields.io/npm/dependency-version/hodux/peer/react?logo=react)
 
-（基于ES6 Proxy API的）React响应式数据流方案。
+（基于ES6 Proxy的）React响应式数据流方案。
 
 ## 使用介绍
 
@@ -112,7 +112,7 @@ export default function Counter() {
 
 直接选择state并返回：
 
-```js
+```javascript
 function MyConponent() {
 	const foo = useSelector(() => store.foo);
 }
@@ -120,7 +120,7 @@ function MyConponent() {
 
 依赖计算：由于`useSelector`是一个custom hook，所以`selector`内部可以直接访问组件内部的任意变量（比如props）而不需要做任何的参数传递。
 
-```js
+```javascript
 function ComputedWithProps({ step }) {
   // 相当于computed
 	const total = useSelector(() => counterStore.count + step);
@@ -129,7 +129,7 @@ function ComputedWithProps({ step }) {
 
 select多个store：
 
-```js
+```javascript
 function CompWithMutlStore() {
   // 当且仅当store1的count值或者store2的step值改变时才会re-render，result总会是最新的计算结果
 	const result = useSelector(() => store1.count + store2.step);

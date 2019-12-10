@@ -11,7 +11,7 @@ English | [简体中文](./README.zh-CN.md)
 
 The reactivity state management for React. Made with :heart: and ES6 Proxy API.
 
-> Inspired by [react-easy-state](https://github.com/solkimicreb/react-easy-state) but consider for React Hooks.
+> Inspired by [react-easy-state](https://github.com/solkimicreb/react-easy-state) but considered for React Hooks.
 
 ## Features
 

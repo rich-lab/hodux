@@ -39,6 +39,7 @@
     "react/jsx-props-no-spreading": "off",
     "import/prefer-default-export": "off",
     "import/no-unresolved": ["off"],
+    "import/extensions": "off",
     "no-param-reassign": "off",
     "arrow-body-style": "off",
     "no-plusplus": "off",

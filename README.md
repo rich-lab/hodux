@@ -55,9 +55,9 @@ $ yarn add hodux
 ### `store(model)`
 
 - Signature: `function store<M extends object>(model: M): M`
-- Description: creates and returns a proxied observable object by the passed model(object), the original model object is not modified. It's just a wrapper of [observable()](https://github.com/nx-js/observer-util#proxy--observableobject).
+- Description: creates and returns a proxied observable object by the passed model(any observeable type), the original model object is not modified. It's just a wrapper of [observable()](https://github.com/nx-js/observer-util#proxy--observableobject).
 
-create store with object-based model:
+create store with model:
 
 ```js
 // stores/counter.js
@@ -151,9 +151,11 @@ Select state from multiple stores:
 ```js
 function CompWithMutlStore() {
   // whenever the `count` from store1 or the `step` from store1 changes the compoent will re-render, so the `result` is always be the newest value
-	const result = useSelector(() => store1.count + store2.step);
+  const result = useSelector(() => store1.count + store2.step);
 }
 ```
+
+:zap: Attention please, `selector` should not returns non-serializable value such as function, Symbol or ES6 collection, because they are incomparable, you should select out plain serializable objects, arrays, and primitives. This issues is similar to react-redux hooks, check the [document](https://redux.js.org/faq/organizing-state#can-i-put-functions-promises-or-other-non-serializable-items-in-my-store-state) or this [issue](https://github.com/reduxjs/react-redux/issues/1286), but the target model pass to `store()` has no this limitations, you should convert non-serializable to serializable before returning.
 
 ### `connect(selector, ownProps?)`
 

@@ -149,6 +149,9 @@ interface Config<V> {
 
   - debugger：透传给[observer-util](https://github.com/nx-js/observer-util#boolean--isobservableobject)，一般用于调试打印一些日志
 
+
+:zap: 请注意：`selector` 的返回值必须是一个serializable类型（js对象、数组以及基本值），因为non-serializable值（如function、ES6 collection、Symbol、RegExp等）进行比较是无意义的，react-redux hooks也有此[限制](https://redux.js.org/faq/organizing-state#can-i-put-functions-promises-or-other-non-serializable-items-in-my-store-state)，但是`store()`没这个限制（接受任意observeable对象），你可以在`selector`内部对non-serializable值进行serializable转换后再返回。
+
 ### 类组件绑定：`connect(selector, ownProps?)`
 
 ```ts

@@ -5,8 +5,6 @@ import { HoduxContext } from './Config';
 import { tryClone } from './utils';
 import { Config, Selector, UnwrapValue } from './types';
 
-// @see react-redux
-const useIsomorphicLayoutEffect = typeof window !== 'undefined' ? useLayoutEffect : useEffect;
 const refEquality = (a: unknown, b: unknown) => a === b;
 
 /**
@@ -23,7 +21,7 @@ const refEquality = (a: unknown, b: unknown) => a === b;
  *    - debugger: the debugger function passed to `@nx-js/observer-util`
  *
  *
- * @param {Function} selector the selector function
+ * @param {Function} selector the selector which must returns plain serializable objects, arrays, and primitives value
  * @param {Object=} config the config for current component
  *
  * @returns {any} the selected state
@@ -83,7 +81,7 @@ export default function useSelector<V>(
   }
 
   // cleanup
-  useIsomorphicLayoutEffect(() => {
+  useEffect(() => {
     return () => {
       if (reactionRef.current) {
         unobserve(reactionRef.current);

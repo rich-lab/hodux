@@ -15,12 +15,7 @@ const hasOwn = Object.prototype.hasOwnProperty;
 export function shallowEqual(objA: any, objB: any) {
   if (is(objA, objB)) return true;
 
-  if (
-    typeof objA !== 'object' ||
-    objA === null ||
-    typeof objB !== 'object' ||
-    objB === null
-  ) {
+  if (typeof objA !== 'object' || objA === null || typeof objB !== 'object' || objB === null) {
     return false;
   }
 

@@ -98,16 +98,20 @@ type BasicTypes =
   | undefined
   | null;
 
-type ArrayItem<T> = { [P in keyof T]: UnwrapValue<T[P]> }
+type ArrayItem<T> = { [P in keyof T]: UnwrapValue<T[P]> };
 
 // Recursively unwraps nested selected value
 export type UnwrapValue<T> = {
-  basic: T
-  array: T extends Array<infer V> ? Array<UnwrapValue<V>> & ArrayItem<T> : T
-  object: { [K in keyof T]: UnwrapValue<T[K]> }
-}[T extends BasicTypes ? 'basic'
-  : T extends Array<any> ? 'array'
-  : T extends object ? 'object' : never]
+  basic: T;
+  array: T extends Array<infer V> ? Array<UnwrapValue<V>> & ArrayItem<T> : T;
+  object: { [K in keyof T]: UnwrapValue<T[K]> };
+}[T extends BasicTypes
+  ? 'basic'
+  : T extends Array<any>
+  ? 'array'
+  : T extends object
+  ? 'object'
+  : never];
 
 /**
  * Store selector function interface
@@ -147,14 +151,16 @@ export type Shared<InjectedProps, DecorationTargetProps> = {
 export type GetProps<C> = C extends ComponentClass<infer P> ? P : never;
 
 // only support ComponentClass, FunctionComponent should use useSelector hook!
-export type ConnectedComponent<C extends ComponentClass<any>, P> = 
-  NamedExoticComponent<JSX.LibraryManagedAttributes<C, P>> & NonReactStatics<C>;
+export type ConnectedComponent<C extends ComponentClass<any>, P> = NamedExoticComponent<
+  JSX.LibraryManagedAttributes<C, P>
+> &
+  NonReactStatics<C>;
 
 // @see https://github.com/DefinitelyTyped/DefinitelyTyped/blob/674d84d48af47b4b608d54c71f148e605dff2ccd/types/react-redux/index.d.ts
 export type InferableComponentEnhancerWithProps<TInjectedProps, TNeedsProps> = <
   C extends ComponentClass<Matching<TInjectedProps, GetProps<C>>>
 >(
-  classComponent: C
+  classComponent: C,
 ) => ConnectedComponent<
   C,
   Omit<GetProps<C>, keyof Shared<TInjectedProps, GetProps<C>>> & TNeedsProps

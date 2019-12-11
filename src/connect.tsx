@@ -10,7 +10,7 @@ import { Config, Selector, InferableComponentEnhancerWithProps } from './types';
  * A HOC wrapper of `useSelector` to connect store state to class components.
  *
  * connect accepts two parameters:
- * 
+ *
  * - the first parameter is a selector function familiar to mapStateToProps of redux, it should returns a `key-value` map of selected state.
  *
  * - the second one is an optional config object
@@ -23,7 +23,7 @@ import { Config, Selector, InferableComponentEnhancerWithProps } from './types';
  * @param {Object=} config the config for current component
  *
  * @returns {ConnectedComponent} the connected class component
- * 
+ *
  * @example
  * const counter = store({
  *   num: 0,
@@ -58,7 +58,8 @@ export function connect(selectorWithProps, config) {
       return <WrappedComponent {...mergedProps} />;
     };
 
-    const wrappedComponentName = WrappedComponent.displayName || WrappedComponent.name || 'Component';
+    const wrappedComponentName =
+      WrappedComponent.displayName || WrappedComponent.name || 'Component';
     const Connect = React.memo(ConnectFunction);
 
     // Connect.WrappedComponent = WrappedComponent;

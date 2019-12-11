@@ -5,7 +5,7 @@ import counter from '../counter';
 
 const selector = () => ({
   c: counter.c,
-  count: counter.state.count
+  count: counter.state.count,
 });
 
 type Props = ReturnType<typeof selector>;
@@ -29,7 +29,7 @@ class Counter extends Component<Props> {
 const config: Config<Props> = {
   debugger(e) {
     if (e.type === 'set') console.log('[SET]', e.key, e.oldValue, e.value);
-  }
+  },
 };
 
 export default connect(selector, config)(Counter);

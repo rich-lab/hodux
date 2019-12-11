@@ -11,7 +11,6 @@ export {
   useSelector,
   connect,
   batch,
-  
   // types
   Debugger,
   Equals,

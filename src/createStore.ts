@@ -1,7 +1,7 @@
 import { observable } from '@nx-js/observer-util';
 import invariant from 'invariant';
 
-import { rawToProxy/* , proxyToRaw */ } from './internals';
+import { rawToProxy /* , proxyToRaw */ } from './internals';
 import { isObject, isPlainObject } from './utils';
 
 function hasModel(model: unknown): model is object {

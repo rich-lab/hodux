@@ -2,6 +2,10 @@ English | [简体中文](./README.zh-CN.md)
 
 # Hodux
 
+The reactivity state management for React.
+
+> Inspired by [react-easy-state](https://github.com/solkimicreb/react-easy-state) but considered for React Hooks.
+
 [![NPM version](https://img.shields.io/npm/v/hodux.svg?style=flat)](https://npmjs.org/package/hodux)
 [![Build Status](https://img.shields.io/travis/react-kit/hodux.svg?style=flat)](https://travis-ci.org/react-kit/hodux)
 [![Coverage Status](https://img.shields.io/coveralls/react-kit/hodux.svg?style=flat)](https://coveralls.io/r/react-kit/hodux)
@@ -9,9 +13,9 @@ English | [简体中文](./README.zh-CN.md)
 [![size](https://badgen.net/bundlephobia/minzip/hodux@latest)](https://bundlephobia.com/result?p=hodux@latest)
 ![React](https://img.shields.io/npm/dependency-version/hodux/peer/react?logo=react)
 
-The reactivity state management for React. Made with :heart: and ES6 Proxy API.
+## Try it on codesandbox
 
-> Inspired by [react-easy-state](https://github.com/solkimicreb/react-easy-state) but considered for React Hooks.
+[![Edit](https://codesandbox.io/static/img/play-codesandbox.svg)](https://codesandbox.io/s/todo-mvc-b3rhz)
 
 ## Features
 

@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useLayoutEffect, useReducer, useRef } from 'react';
+import React, { useContext, useEffect, useReducer, useRef } from 'react';
 import { observe, unobserve } from '@nx-js/observer-util';
 
 import { HoduxContext } from './Config';
@@ -41,10 +41,7 @@ const refEquality = (a: unknown, b: unknown) => a === b;
  *   return <div onClick={counter.inc}>{total}</div>
  * }
  */
-export default function useSelector<V>(
-  selector: Selector<V>,
-  config?: Config<V>,
-): UnwrapValue<V> {
+export default function useSelector<V>(selector: Selector<V>, config?: Config<V>): UnwrapValue<V> {
   const globalConfig = useContext(HoduxContext);
   const equals = (config || globalConfig || {}).equals || refEquality;
   const debuggerFn = (config || globalConfig || {}).debugger;
@@ -53,29 +50,29 @@ export default function useSelector<V>(
   const vRef: React.MutableRefObject<V | V[]> = useRef();
 
   if (!reactionRef.current) {
-    reactionRef.current = observe(() => {
-      const selectedValue = selector();
-
-      // for diff
-      vRef.current = tryClone(selectedValue);
-
-      return selectedValue;
-    }, {
-      scheduler: () => {
-        const newValue = selector();
-
-        // TODO: diff logger
-        // console.log(
-        //   'oldValue %j, newValue: %j, equalName: %s, isEqual: %s',
-        //   vRef.current, newValue, equals.name, equals(vRef.current, newValue)
-        // );
-
-        if (!equals(vRef.current, newValue)) {
-          forceRender({});
-        }
+    reactionRef.current = observe(
+      () => {
+        // 1. for diff
+        // 2. actually recursively, @see https://github.com/nx-js/observer-util/issues/2#issuecomment-235096092
+        vRef.current = tryClone(selector());
       },
-      debugger: debuggerFn
-    });
+      {
+        scheduler() {
+          const newValue = selector();
+
+          // TODO: diff logger
+          // console.log(
+          //   'oldValue %j, newValue: %j, equalName: %s, isEqual: %s',
+          //   vRef.current, newValue, equals.name, equals(vRef.current, newValue)
+          // );
+
+          if (!equals(vRef.current, newValue)) {
+            forceRender({});
+          }
+        },
+        debugger: debuggerFn,
+      },
+    );
   } else {
     reactionRef.current();
   }

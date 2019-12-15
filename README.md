@@ -17,8 +17,8 @@ Simple reactivity React state management. Made with ES6 Proxies.
 Hodux is a reactivity state management solution for React which supports both Hooks and Class, it has only 2 core APIs and quit easy to learn.
 
 - **Reactive** data flow.
-- Familiar **selector API** with react-redux hooks allows extracting state from store, and **[high-performance](https://github.com/react-kit/hodux/issues/3)** optimized.
-- **Perfectly** TypeScript support
+- Familiar **selector API** with react-redux hooks allows extracting state from store, and [**high-performance**](https://github.com/react-kit/hodux/issues/3) optimized.
+- **Perfectly** TypeScript support.
 
 ```js
 import { store, useSelector } from 'hodux';

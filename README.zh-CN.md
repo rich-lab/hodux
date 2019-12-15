@@ -52,8 +52,8 @@ $ yarn add hodux
 
 ### 定义store：`store(model)`
 
-签名：`function store<M extends object>(model: M): M`
-作用：传入一个object like model，内部会进行Proxy binding，这样当model上任意数据发生改变时hodux就能感知到，这得益于ES6 Proxy强大的数据劫持能力，且所有Proxy支持的类型（object、array、ES6 collections对象）都可以挂载到model上或者直接作为model。
+- 签名：`function store<M extends object>(model: M): M`
+- 作用：传入一个object like model，内部会进行Proxy binding，这样当model上任意数据发生改变时hodux就能感知到，这得益于ES6 Proxy强大的数据劫持能力，且所有Proxy支持的类型（object、array、ES6 collections对象）都可以挂载到model上或者直接作为model。
 
 把state和方法统统挂载到model：
 
@@ -108,8 +108,8 @@ export default function Counter() {
 
 ### 从store选择state：`useSelector(selector, config?)`
 
-签名：`function useSelector<V>(selector: Selector<V>, config?: Config<V>): V`
-说明：API参考了我们熟悉的react-redux，功能相似但不完全相同，在selector函数里边按需提取store state（组件依赖收集），hodux会缓存useSelector的返回值，在下一次render时进行对比，如果两次返回值不相同才会真正重新render该组件。
+- 签名：`function useSelector<V>(selector: Selector<V>, config?: Config<V>): V`
+- 说明：API参考了我们熟悉的react-redux，功能相似但不完全相同，在selector函数里边按需提取store state（组件依赖收集），hodux会缓存useSelector的返回值，在下一次render时进行对比，如果两次返回值不相同才会真正重新render该组件。
 
 > 因为redux采用single store，所以任意state改变时selector都会重新执行（参见[官方tips](https://react-redux.js.org/api/hooks#useselector)），redux内部会对selector返回值进行对比最终决定是否重新render，而hodux得益于Proxy精细颗粒度的数据劫持控制，只有在selected的state发生改变时才会执行selector，因此理论上不需要像redux那样借助第三方select（如reselect）库来实现select cache。
 
@@ -210,8 +210,8 @@ render(<Connected step={10} />);
 
 ### `<HoduxConfig equals={fn} debugger={fn} />`
 
-type：`React.FunctionComponent<React.PropsWithChildren<Config<any>>>`
-作用：全局config provider，组件可自行传入参数覆盖全局配置。
+- type：`React.FunctionComponent<React.PropsWithChildren<Config<any>>>`
+- 作用：全局config provider，组件可自行传入参数覆盖全局配置。
 
 ```js
 function consoleLogger(e) {
@@ -230,8 +230,8 @@ ReactDOM.render(
 
 ### `batch(fn)`
 
-签名：`function batch(fn: Function) => void`
-作用：`unstable_batchedUpdates` API的简单封装，用于在异步环境下批量更新state。
+- 签名：`function batch(fn: Function) => void`
+- 作用：`unstable_batchedUpdates` API的简单封装，用于在异步环境下批量更新state。
 
 > 注意：React团队可能在后续解决了异步函数批量更新问题之后会移除unstable_batchedUpdates API，所以`batch`方法也可能未来会被移除。
 

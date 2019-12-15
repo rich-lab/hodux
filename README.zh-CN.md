@@ -50,10 +50,10 @@ $ yarn add hodux
 
 ## API
 
-### 定义store：`store(model)`
+### `store(model)`
 
 - 签名：`function store<M extends object>(model: M): M`
-- 作用：传入一个object like model，内部会进行Proxy binding，这样当model上任意数据发生改变时hodux就能感知到，这得益于ES6 Proxy强大的数据劫持能力，且所有Proxy支持的类型（object、array、ES6 collections对象）都可以挂载到model上或者直接作为model。
+- 说明：创建一个响应式store对象。传入一个object model，内部会进行Proxy binding，这样当model上任意数据发生改变时hodux就能感知到，得益于ES6 Proxy强大的数据劫持能力，所有Proxy支持的类型（object、array、ES6 collections对象）都可以挂载到model上或者直接作为model。
 
 把state和方法统统挂载到model：
 
@@ -106,10 +106,10 @@ export default function Counter() {
 }
 ```
 
-### 从store选择state：`useSelector(selector, config?)`
+### `useSelector(selector, config?)`
 
 - 签名：`function useSelector<V>(selector: Selector<V>, config?: Config<V>): V`
-- 说明：API参考了我们熟悉的react-redux，功能相似但不完全相同，在selector函数里边按需提取store state（组件依赖收集），hodux会缓存useSelector的返回值，在下一次render时进行对比，如果两次返回值不相同才会真正重新render该组件。
+- 说明：从store提取state。API参考了我们熟悉的react-redux，功能相似但不完全相同，在`selector`函数里边按需提取store state（组件依赖收集），hodux会缓存`useSelector`的返回值，在下一次render时进行对比，如果两次返回值不相同才会真正重新render该组件。
 
 > 因为redux采用single store，所以任意state改变时selector都会重新执行（参见[官方tips](https://react-redux.js.org/api/hooks#useselector)），redux内部会对selector返回值进行对比最终决定是否重新render，而hodux得益于Proxy精细颗粒度的数据劫持控制，只有在selected的state发生改变时才会执行selector，因此理论上不需要像redux那样借助第三方select（如reselect）库来实现select cache。
 

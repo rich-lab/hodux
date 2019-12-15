@@ -15,7 +15,7 @@
 ## 介绍
 
 - **响应式**数据流转，足够简单易懂。
-- 类react-redux hooks的**selector API**，可以按需从store提取数据，当且仅当选择的数据改变时组件才会刷新，**[高性能](https://github.com/react-kit/hodux/issues/3)**保证。
+- 类react-redux hooks的**selector API**，可以按需从store提取数据，当且仅当选择的数据改变时组件才会刷新，[**高性能**](https://github.com/react-kit/hodux/issues/3)保证。
 - 完美支持**Typescript**。
 
 ```js

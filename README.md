@@ -2,30 +2,23 @@ English | [简体中文](./README.zh-CN.md)
 
 # Hodux
 
-The reactivity state management for React.
-
-> Inspired by [react-easy-state](https://github.com/solkimicreb/react-easy-state) but considered for React Hooks.
-
-[![NPM version](https://img.shields.io/npm/v/hodux.svg?style=flat)](https://npmjs.org/package/hodux)
 [![Build Status](https://img.shields.io/travis/react-kit/hodux.svg?style=flat)](https://travis-ci.org/react-kit/hodux)
 [![Coverage Status](https://img.shields.io/coveralls/react-kit/hodux.svg?style=flat)](https://coveralls.io/r/react-kit/hodux)
-[![NPM downloads](http://img.shields.io/npm/dm/hodux.svg?style=flat)](https://npmjs.org/package/hodux)
+[![NPM version](https://img.shields.io/npm/v/hodux.svg?style=flat)](https://npmjs.org/package/hodux)
 [![size](https://badgen.net/bundlephobia/minzip/hodux@latest)](https://bundlephobia.com/result?p=hodux@latest)
 ![React](https://img.shields.io/npm/dependency-version/hodux/peer/react?logo=react)
 
-## Try it on codesandbox
+Simple reactivity React state management. Made with ES6 Proxies.
 
-[![Edit](https://codesandbox.io/static/img/play-codesandbox.svg)](https://codesandbox.io/s/todo-mvc-b3rhz)
-
-## Features
-
-- **Observable store**: the state flow is easy enough.
-- **Consume state with react hook**: select state from store using custom hook as needed, and render optimized.
-- **Perfectly TypeScript support**
+> Inspired by [react-easy-state](https://github.com/solkimicreb/react-easy-state) but considered for React Hooks.
 
 ## Introduction
 
 Hodux is a reactivity state management solution for React which supports both Hooks and Class, it has only 2 core APIs and quit easy to learn.
+
+- **Reactive** data flow.
+- Familiar **selector API** with react-redux hooks allows extracting state from store, and **[high-performance](https://github.com/react-kit/hodux/issues/3)** optimized.
+- **Perfectly** TypeScript support
 
 ```js
 import { store, useSelector } from 'hodux';
@@ -45,6 +38,10 @@ export default function Counter(props) {
   return <div onClick={counter.inc}>The num:{num}</div>;
 }
 ```
+
+## Try it on CodeSandbox
+
+[![Edit](https://codesandbox.io/static/img/play-codesandbox.svg)](https://codesandbox.io/s/todo-mvc-b3rhz)
 
 ## Install
 

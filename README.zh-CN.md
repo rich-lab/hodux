@@ -2,22 +2,21 @@
 
 # Hodux
 
-（基于ES6 Proxy的）React响应式数据流方案。
-
-[![NPM version](https://img.shields.io/npm/v/hodux.svg?style=flat)](https://npmjs.org/package/hodux)
 [![Build Status](https://img.shields.io/travis/react-kit/hodux.svg?style=flat)](https://travis-ci.org/react-kit/hodux)
 [![Coverage Status](https://img.shields.io/coveralls/react-kit/hodux.svg?style=flat)](https://coveralls.io/r/react-kit/hodux)
-[![NPM downloads](http://img.shields.io/npm/dm/hodux.svg?style=flat)](https://npmjs.org/package/hodux)
+[![NPM version](https://img.shields.io/npm/v/hodux.svg?style=flat)](https://npmjs.org/package/hodux)
 [![size](https://badgen.net/bundlephobia/minzip/hodux@latest)](https://bundlephobia.com/result?p=hodux@latest)
 ![React](https://img.shields.io/npm/dependency-version/hodux/peer/react?logo=react)
 
-## 在线demo（TodoMVC）
+（基于ES6 Proxy构建的）超简单易用的轻量级React数据流方案。
 
-[![Edit](https://codesandbox.io/static/img/play-codesandbox.svg)](https://codesandbox.io/s/todo-mvc-b3rhz)
+> Hodux灵感源自[react-easy-state](https://github.com/solkimicreb/react-easy-state)但抛弃HOC拥抱Hooks。
 
-## 使用介绍
+## 介绍
 
-Hodux基于响应式系统机进行数据流转、以自定义Hook方式消费数据，同时支持React Hooks和Class。
+- **响应式**数据流转，足够简单易懂。
+- 类react-redux hooks的**selector API**，可以按需从store提取数据，当且仅当选择的数据改变时组件才会刷新，**[高性能](https://github.com/react-kit/hodux/issues/3)**保证。
+- 完美支持**Typescript**。
 
 ```js
 import { store, useSelector } from 'hodux';
@@ -36,6 +35,10 @@ export default function Counter(props) {
   return <div onClick={counter.inc}>The used num:{num}</div>;
 }
 ```
+
+## 在线demo（TodoMVC）
+
+[![Edit](https://codesandbox.io/static/img/play-codesandbox.svg)](https://codesandbox.io/s/todo-mvc-b3rhz)
 
 ## 安装
 

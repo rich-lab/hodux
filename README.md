@@ -8,13 +8,13 @@ English | [简体中文](./README.zh-CN.md)
 [![size](https://badgen.net/bundlephobia/minzip/hodux@latest)](https://bundlephobia.com/result?p=hodux@latest)
 ![React](https://img.shields.io/npm/dependency-version/hodux/peer/react?logo=react)
 
-Simple reactivity React state management. Made with ES6 Proxies.
+:rocket:Simple reactivity React global state management. Made with ES6 Proxies.
 
 > Inspired by [react-easy-state](https://github.com/solkimicreb/react-easy-state) but considered for React Hooks.
 
-## Introduction
+## :sparkles:Introduction
 
-Hodux is a reactivity state management solution for React which supports both Hooks and Class, it has only 2 core APIs and quit easy to learn.
+Hodux is a reactivity global state management solution for React which supports both Hooks and Class, it has only 2 core APIs and quit easy to learn.
 
 - **Reactive** data flow.
 - Familiar **selector API** with react-redux hooks allows extracting state from store, and [**high-performance**](https://github.com/react-kit/hodux/issues/3) optimized.
@@ -43,7 +43,7 @@ export default function Counter(props) {
 
 [![Edit](https://codesandbox.io/static/img/play-codesandbox.svg)](https://codesandbox.io/s/todo-mvc-b3rhz)
 
-## Install
+## :package:Installation
 
 ```sh
 npm install --save hodux
@@ -51,14 +51,14 @@ npm install --save hodux
 $ yarn add hodux
 ```
 
-## API
+## 📖 API
 
 ### `store(model)`
 
 - Signature: `function store<M extends object>(model: M): M`
-- Description: creates and returns a proxied observable object by the passed model(any observeable type), the original model object is not modified. It's just a wrapper of [observable()](https://github.com/nx-js/observer-util#proxy--observableobject).
+- Description: pass in a pureModel or viewModel and returns a proxied observable object, the original model object is not modified. It's just a wrapper of [observable()](https://github.com/nx-js/observer-util#proxy--observableobject).
 
-create store with model:
+create store with viewModel:
 
 ```js
 // stores/counter.js
@@ -74,6 +74,26 @@ const counter = store({
 });
 
 export default counter;
+```
+
+create store with pureModel:
+
+```js
+// stores/counter.js
+export default store({ count: 0 });
+
+// src/Counter.js
+import counter from './stores/counter';
+// changing data anywhere outside the store, and the components can perceive this changes
+const incx = async () => {
+  await wait(1000);
+  counter.count += 1;
+};
+
+export function Counter() {
+  const count = useSelector(() => counter.count);
+  return <div onClick={incx}>{count}</div>;
+}
 ```
 
 lazy creates:
@@ -93,19 +113,6 @@ export default (initalCount = 0) => {
   }
 
   return { state, inc, incx }
-}
-```
-
-local store(create store inner components):
-
-> Maybe use native APIs(useState or useReducer) will be better, the goal of hodux is shared store between components.
-
-```js
-export default function Counter() {
-  const counter = store({ count: 0 });
-  const count = useSelector(() => counter.count);
-
-  return <div onClick={() => counter.count++}>{count}</div>;
 }
 ```
 
@@ -136,7 +143,7 @@ useSelector(() => {
 });
 ```
 
-You should pass in equals function when returns object:
+You should pass in equals function when returns complex type such as object and array:
 
 ```js
 useSelector(() => {
@@ -263,7 +270,7 @@ listStore.load = async () => {
 }
 ```
 
-## Run examples locally
+## 💿 Run examples locally
 
 The [examples](examples) folder contains working examples.
 You can run one of them with
@@ -273,6 +280,11 @@ $ cd examples/[folder] && npm start
 ```
 
 then open <http://localhost:3000> in your web browser.
+
+## 🎁 Acknowledgements
+
+- [@nx-js/observer-util](https://github.com/nx-js/observer-util) Transparent reactivity with 100% language coverage. Made with :heart: and ES6 Proxies.
+- [react-easy-state](https://github.com/solkimicreb/react-easy-state) Simple React state management
 
 ## License
 

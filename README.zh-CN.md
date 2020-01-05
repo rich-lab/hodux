@@ -8,11 +8,11 @@
 [![size](https://badgen.net/bundlephobia/minzip/hodux@latest)](https://bundlephobia.com/result?p=hodux@latest)
 ![React](https://img.shields.io/npm/dependency-version/hodux/peer/react?logo=react)
 
-（基于ES6 Proxy构建的）超简单易用的轻量级React数据流方案。
+:rocket:（基于ES6 Proxy构建的）轻量级简单易用的React响应式数据流方案。
 
-> Hodux灵感源自[react-easy-state](https://github.com/solkimicreb/react-easy-state)但抛弃HOC拥抱Hooks。
+> Hodux灵感源自[react-easy-state](https://github.com/solkimicreb/react-easy-state)但抛弃HOC，拥抱Hooks。
 
-## 介绍
+## :sparkles:介绍
 
 - **响应式**数据流转，足够简单易懂。
 - 类react-redux hooks的**selector API**，可以按需从store提取数据，当且仅当选择的数据改变时组件才会刷新，[**高性能**](https://github.com/react-kit/hodux/issues/3)保证。
@@ -40,7 +40,7 @@ export default function Counter(props) {
 
 [![Edit](https://codesandbox.io/static/img/play-codesandbox.svg)](https://codesandbox.io/s/todo-mvc-b3rhz)
 
-## 安装
+## :package:安装
 
 ```bash
 $ npm install hodux --save
@@ -48,14 +48,34 @@ $ npm install hodux --save
 $ yarn add hodux
 ```
 
-## API
+## 📖 API
 
 ### `store(model)`
 
 - 签名：`function store<M extends object>(model: M): M`
-- 说明：创建一个响应式store对象。传入一个object model，内部会进行Proxy binding，这样当model上任意数据发生改变时hodux就能感知到，得益于ES6 Proxy强大的数据劫持能力，所有Proxy支持的类型（object、array、ES6 collections对象）都可以挂载到model上或者直接作为model。
+- 说明：传入一个pureModel或viewModel，内部会进行Proxy binding，创建一个响应式model对象。得益于ES6 Proxy强大的数据劫持能力，（相对于defineProperty）store可以感知到更加细粒度的数据修改（如数组、对象等）。
 
-把state和方法统统挂载到model：
+传入pureModel：
+
+```js
+// stores/counter.js
+export default store({ count: 0 });
+
+// src/Counter.js
+import counter from './stores/counter';
+// 在store外部（任意位置）修改数据，React组件都能更新数据
+const incx = async () => {
+  await wait(1000);
+  counter.count += 1;
+};
+
+export function Counter() {
+  const count = useSelector(() => counter.count);
+  return <div onClick={incx}>{count}</div>;
+}
+```
+
+传入viewModel（数据和操作数据的方法放在一起）：
 
 ```js
 // stores/counter.js
@@ -73,7 +93,7 @@ const counter = store({
 export default counter;
 ```
 
-lazy create store：
+lazy create（可处理初始值、内部变量等）：
 
 ```js
 // stores/counter.js
@@ -90,19 +110,6 @@ export default (initalCount = 0) => {
   }
 
   return { state, inc, incx }
-}
-```
-
-local store（在组件内部创建store）:
-
-> hodux的主要用途是全局状态管理，本地数据管理建议采用useState或useReducer
-
-```js
-export default function Counter() {
-  const counter = store({ count: 0 });
-  const count = useSelector(() => counter.count);
-
-  return <div onClick={() => counter.count++}>{count}</div>;
 }
 ```
 
@@ -255,7 +262,7 @@ listStore.load = async () => {
 }
 ```
 
-## 本地运行示例
+## 💿 本地运行示例
 
 [examples](examples)文件夹包含所有可用代码示例，可以通过以下命令运行示例代码：
 

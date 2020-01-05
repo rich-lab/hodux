@@ -8,13 +8,13 @@ English | [简体中文](./README.zh-CN.md)
 [![size](https://badgen.net/bundlephobia/minzip/hodux@latest)](https://bundlephobia.com/result?p=hodux@latest)
 ![React](https://img.shields.io/npm/dependency-version/hodux/peer/react?logo=react)
 
-:rocket:Simple reactivity React global state management. Made with ES6 Proxies.
+:rocket:Simple reactive React global state management. Made with ES6 Proxies.
 
 > Inspired by [react-easy-state](https://github.com/solkimicreb/react-easy-state) but considered for React Hooks.
 
 ## :sparkles:Introduction
 
-Hodux is a reactivity global state management solution for React which supports both Hooks and Class, it has only 2 core APIs and quit easy to learn.
+Hodux is a reactive global state management solution for React which supports both Hooks and Class, it has only 2 core APIs and quit easy to learn.
 
 - **Reactive** data flow.
 - Familiar **selector API** with react-redux hooks allows extracting state from store, and [**high-performance**](https://github.com/react-kit/hodux/issues/3) optimized.

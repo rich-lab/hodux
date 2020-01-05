@@ -1,6 +1,6 @@
 import { unstable_batchedUpdates } from 'react-dom';
-import { raw } from '@nx-js/observer-util';
-import { Equals } from './types';
+// import { raw } from '@nx-js/observer-util';
+// import { Equals } from './types';
 
 export function batch(fn: Function, ctx?: object, ...args: unknown[]): any {
   let r;
@@ -62,21 +62,13 @@ export function isPlainObject(obj: unknown) {
   return proto === baseProto;
 }
 
-export function tryClone<Value>(
-  value: Value,
-  // equals: Equals<Value>
-): Value | Value[] {
+export function tryClone<Value>(value: Value): Value | Value[] {
   if (isPlainObject(value)) {
     // It is faster to use JSON.parse of a string literal than to use a JSON object literal:
     // @see https://v8.dev/blog/cost-of-javascript-2019#json
 
     // const cloned = JSON.parse(JSON.stringify(value as PickState<Value>));
     const cloned = JSON.parse(JSON.stringify(value));
-
-    // if (!equals(cloned, value)) {
-    //   // console.warn('Selected value should be plain object or basic types!');
-    //   return value;
-    // }
 
     return cloned;
   }

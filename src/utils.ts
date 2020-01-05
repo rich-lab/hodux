@@ -67,11 +67,11 @@ export function tryClone<Value>(value: Value): Value | Value[] {
     // It is faster to use JSON.parse of a string literal than to use a JSON object literal:
     // @see https://v8.dev/blog/cost-of-javascript-2019#json
 
-    // const cloned = JSON.parse(JSON.stringify(value as PickState<Value>));
     const cloned = JSON.parse(JSON.stringify(value));
 
     return cloned;
   }
+  
   if (Array.isArray(value)) return value.slice();
 
   return value;

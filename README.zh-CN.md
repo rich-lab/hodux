@@ -21,13 +21,14 @@
 ```js
 import { store, useSelector } from 'hodux';
 
-// 1、创建store（数据劫持）
+// 1、创建一个可观测的store（数据劫持）
 const counter = store({
   num: 0,
+  otther: '',
   inc() { counter.num += 1; }
 });
 
-// 2、（按需）提取数据（依赖收集）
+// 2、按需取数（依赖收集）
 export default function Counter(props) {
   // 当且仅当num改变时组件re-render
   const num = useSelector(() => counter.num);
@@ -53,9 +54,10 @@ $ yarn add hodux
 ### `store(model)`
 
 - 签名：`function store<M extends object>(model: M): M`
-- 说明：传入一个pureModel或viewModel，内部会进行Proxy binding，创建一个响应式model对象。得益于ES6 Proxy强大的数据劫持能力，（相对于defineProperty）store可以感知到更加细粒度的数据修改（如数组、对象等）。
+- 说明：传入一个pureModel或viewModel，返回一个可观测（observable）对象，原始的model对象并没有任何改变，内部只是进行了一次Proxy binding，所以返回的observable对象的行为和原生js对象无异。得益于ES6 Proxy强大的数据劫持能力，store可以感知到更加细粒度的数据修改（如数组、对象等）。
 
-传入pureModel：
+<details>
+<summary><strong>传入pureModel</strong></summary>
 
 ```js
 // stores/counter.js
@@ -75,7 +77,10 @@ export function Counter() {
 }
 ```
 
-传入viewModel（数据和操作数据的方法放在一起）：
+</details>
+
+<details>
+<summary><strong>传入viewModel（数据和操作数据的方法放在一起）</strong></summary>
 
 ```js
 // stores/counter.js
@@ -93,7 +98,10 @@ const counter = store({
 export default counter;
 ```
 
-lazy create（可处理初始值、内部变量等）：
+</details>
+
+<details>
+<summary><strong>Lazy create（可处理初始值、内部变量等）</strong></summary>
 
 ```js
 // stores/counter.js
@@ -113,6 +121,40 @@ export default (initalCount = 0) => {
 }
 ```
 
+</details>
+
+<details>
+<summary><strong>复杂对象（任意合法的js数据结构）</strong></summary>
+
+```js
+// stores can include nested data, arrays, Maps, Sets, getters, setters, inheritance, ...
+const person = store({
+  // nested object
+  profile: {
+    firstName: 'Bob',
+    lastName: 'Smith',
+    // getters
+    get name() {
+      return `${user.firstName} ${user.lastName}`
+    },
+    age: 25
+  },
+  // array
+  hobbies: [ 'programming', 'sports' ],
+  // collections
+  familyMembers: new Map(),
+});
+
+// changing stores as normal js objects
+person.profile.firstName = 'Daid';
+delete person.profile.lastName;
+person.hobbies.push('reading');
+person.familyMembers.set('father', father);
+person.familyMembers.set('mother', mother);
+```
+
+</details>
+
 ### `useSelector(selector, config?)`
 
 - 签名：`function useSelector<V>(selector: Selector<V>, config?: Config<V>): V`
@@ -124,11 +166,37 @@ export default (initalCount = 0) => {
 
 - 第一个是selector函数：从store提取state，作用类似于响应式系统里的`observer`。
 
-直接选择state并返回：
+- 第二个是可选的useSelector配置项
+
+  - equals：前后两次selector value的对比函数，默认是全等（`===`）对比，用户可自行实现equals函数，比如当返回复杂对象时可以直接传入`_.isEqual`用于深度对比（作为最佳实践，推荐返回基本类型，可通过多次`useSelector`调用来选择多个state）。
+
+  - debugger：透传给[observer-util](https://github.com/nx-js/observer-util#boolean--isobservableobject)，一般用于调试打印一些日志
+
+<details>
+<summary><strong>返回基本数据类型（推荐）</strong></summary>
 
 ```javascript
-function MyConponent() {
-	const foo = useSelector(() => store.foo);
+function Counter() {
+  const num = useSelector(() => counter.num);
+  
+  return <div>{num}</div>;
+}
+```
+
+</details>
+
+<details>
+<summary><strong>Computed(计算缓存)</strong></summary>
+
+```js
+function App() {
+  const computed = useSelector(() => {
+    const items = store.items; // select items from store
+
+    return items.reduce((acc, item) => acc + item.value, 0);
+  });
+  
+  return <div>{computed}</div>;
 }
 ```
 
@@ -141,7 +209,10 @@ function ComputedWithProps({ step }) {
 }
 ```
 
-select多个store：
+</details>
+
+<details>
+<summary><strong>select多个store</strong></summary>
 
 ```javascript
 function CompWithMutlStore() {
@@ -150,21 +221,48 @@ function CompWithMutlStore() {
 }
 ```
 
-- 第二个是可选的useSelector配置项
+</details>
 
-```ts
-interface Config<V> {
-  equals?: (previousValue: V, nextValue: V): boolean;
-  debugger?: (event: DebuggerEvent): void;
+<details>
+<summary>返回复杂对象时建议传入equals函数，用于复杂对象diff（默认是全等对比）</summary>
+
+```js
+function TodoView() {
+  const [isEmpty, hasCompleted, allCompleted, active, filter] = useSelector(
+    () => [
+      todoStore.isEmpty,
+      todoStore.hasCompleted,
+      todoStore.allCompleted,
+      todoStore.activeType,
+      todoStore.filterType
+    ],
+    { equals: _.equals } // use lodash/isEqual
+  );
+  ...
 }
 ```
 
-  - equals：前后两次selector value的对比函数，默认是全等（`===`）对比，用户可自行实现equals函数，比如当返回复杂对象时可以直接传入`_.isEqual`用于深度对比（作为最佳实践，推荐返回基本类型，可通过多次`useSelector`调用来选择多个state）。
+</details>
 
-  - debugger：透传给[observer-util](https://github.com/nx-js/observer-util#boolean--isobservableobject)，一般用于调试打印一些日志
+:rotating_light:请注意：`selector` 的返回值必须是一个可序列化（serializable）类型（js对象、数组以及基本值），因为non-serializable值（如function、ES6 collection、Symbol、RegExp等）进行比较是无意义的，react-redux hooks也有此[限制](https://redux.js.org/faq/organizing-state#can-i-put-functions-promises-or-other-non-serializable-items-in-my-store-state)，但是`store()`没这个限制（接受任意observeable对象），你可以在`selector`内部对non-serializable值进行serializable转换后再返回。
 
+<details>
+<summary><strong>:rotating_light:selector应该返回可序列化（serializable）值</strong></summary>
 
-:zap: 请注意：`selector` 的返回值必须是一个serializable类型（js对象、数组以及基本值），因为non-serializable值（如function、ES6 collection、Symbol、RegExp等）进行比较是无意义的，react-redux hooks也有此[限制](https://redux.js.org/faq/organizing-state#can-i-put-functions-promises-or-other-non-serializable-items-in-my-store-state)，但是`store()`没这个限制（接受任意observeable对象），你可以在`selector`内部对non-serializable值进行serializable转换后再返回。
+```js
+function Component() {
+  // DON'T DO THIS
+  const familyMemebers = useSelector(() => person.familyMemebers);
+  // DO THIS
+  const [father, mother] = useSelector(() => [
+    person.familyMemebers.get('father'),
+    person.familyMemebers.get('mother')
+  ]);
+  ...
+}
+```
+
+</details>
 
 ### 类组件绑定：`connect(selector, ownProps?)`
 
@@ -177,7 +275,8 @@ function connect<V extends {}, OwnProps = {}>(
 
 `connect`是一个HOC，传参和`useSelector`基本一致，不同的是`selector`参数返回值需要是一个object（类似`mapStateToProps`），`OwnProps`和react-redux类似，connect支持ownProps。
 
-用法：
+<details>
+<summary><strong>类组件写法</strong></summary>
 
 ```js
 const selectToProps = () => ({ n: counter.n });
@@ -191,7 +290,10 @@ class Counter extends Component {
 export default const ConnectedCounter = connect(selectToProps)(Counter);
 ```
 
-支持ownProps：
+</details>
+
+<details>
+<summary><strong>支持ownProps</strong></summary>
 
 ```js
 const selectToProps = (props) => ({
@@ -214,6 +316,8 @@ const Connected = connect(selectToProps)(Counter);
 
 render(<Connected step={10} />);
 ```
+
+</details>
 
 ### `<HoduxConfig equals={fn} debugger={fn} />`
 

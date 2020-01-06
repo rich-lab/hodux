@@ -10,8 +10,6 @@ English | [简体中文](./README.zh-CN.md)
 
 :rocket:Simple reactive React global state management. Made with ES6 Proxies.
 
-> Inspired by [react-easy-state](https://github.com/solkimicreb/react-easy-state) but considered for React Hooks.
-
 ## :sparkles:Introduction
 
 Hodux is a reactive global state management solution for React which supports both Hooks and Class, it has only 2 core APIs and quit easy to learn.
@@ -23,13 +21,13 @@ Hodux is a reactive global state management solution for React which supports bo
 ```js
 import { store, useSelector } from 'hodux';
 
-// create store(Observable)
+// create an observable object
 const counter = store({
   num: 0,
   inc() { counter.num += 1; }
 });
 
-// select state from store(Dependency collection)
+// select state from store
 export default function Counter(props) {
   const num = useSelector(() => counter.num);
   // or you can do some compute in component
@@ -56,9 +54,10 @@ $ yarn add hodux
 ### `store(model)`
 
 - Signature: `function store<M extends object>(model: M): M`
-- Description: pass in a pureModel or viewModel and returns a proxied observable object, the original model object is not modified. It's just a wrapper of [observable()](https://github.com/nx-js/observer-util#proxy--observableobject).
+- Description: pass in a pureModel or viewModel and returns a proxied-based observable object, and the observable object behave like origin object(just normal js object), it's just a wrapper of ES6 Proxy binding.
 
-create store with viewModel:
+<details>
+<summary><strong>Create store with viewModel</strong></summary>
 
 ```js
 // stores/counter.js
@@ -67,6 +66,7 @@ const counter = store({
   inc() {
     counter.count++;
   },
+  // Async operations can be expressed with the standard async/await syntax
   async incx() {
     await wait(1000);
     counter.count += 1;
@@ -76,7 +76,10 @@ const counter = store({
 export default counter;
 ```
 
-create store with pureModel:
+</details>
+
+<details>
+<summary><strong>Create store with pureModel</strong></summary>
 
 ```js
 // stores/counter.js
@@ -96,7 +99,10 @@ export function Counter() {
 }
 ```
 
-lazy creates:
+</details>
+
+<details>
+<summary><strong>Lazy creates</strong></summary>
 
 ```js
 // stores/counter.js
@@ -116,6 +122,40 @@ export default (initalCount = 0) => {
 }
 ```
 
+</details>
+
+<details>
+<summary><strong>Create complex or large store(any valid JS structure)</strong></summary>
+
+```js
+// stores can include nested data, arrays, Maps, Sets, getters, setters, inheritance, ...
+const person = store({
+  // nested object
+  profile: {
+    firstName: 'Bob',
+    lastName: 'Smith',
+    // getters
+    get name() {
+      return `${user.firstName} ${user.lastName}`
+    },
+    age: 25
+  },
+  // array
+  hobbies: [ 'programming', 'sports' ],
+  // collections
+  familyMembers: new Map(),
+});
+
+// changing stores as normal js objects
+person.profile.firstName = 'Daid';
+delete person.profile.lastName;
+person.hobbies.push('reading');
+person.familyMembers.set('father', father);
+person.familyMembers.set('mother', mother);
+```
+
+</details>
+
 ### `useSelector(selector, config?)`
 
 - Signature: `function useSelector<V>(selector: Selector<V>, config?: Config<V>): V`
@@ -133,37 +173,89 @@ export default (initalCount = 0) => {
 
   - `debugger`: the debugger function passed to `@nx-js/observer-util`
 
-Returns basic type is recommended:
+<details>
+<summary><strong>Returns basic type(is recommended)</strong></summary>
 
 ```js
-useSelector(() => {
-  const items = store.items; // select items from store
-
-  return items.reduce((acc, item) => acc + item.value, 0); // do some compute with state and return result
-});
+function Counter() {
+  const num = useSelector(() => counter.num);
+  
+  return <div>{num}</div>;
+}
 ```
 
-You should pass in equals function when returns complex type such as object and array:
+</details>
+
+<details>
+<summary><strong>Computed(calculation cache)</strong></summary>
 
 ```js
-useSelector(() => {
-  return {
-    loading: listStore.loading,
-    list: listStore.list
-  }
-}, { equals: _.equals }); // use lodash/isEqual
+function App() {
+  const computed = useSelector(() => {
+    const items = store.items; // select items from store
+
+    return items.reduce((acc, item) => acc + item.value, 0);
+  });
+  
+  return <div>{computed}</div>;
+}
 ```
 
-Select state from multiple stores:
+</details>
+
+<details>
+<summary><strong>Select state from multiple stores</strong></summary>
 
 ```js
 function CompWithMutlStore() {
-  // whenever the `count` from store1 or the `step` from store1 changes the compoent will re-render, so the `result` is always be the newest value
+  // whenever the `count` from store1 or the `step` from store1 changes the compoent will re-render, 
+  // so the `result` is always be the newest value
   const result = useSelector(() => store1.count + store2.step);
 }
 ```
 
-:zap: Attention please, `selector` should not returns non-serializable value such as function, Symbol or ES6 collection, because they are incomparable, you should select out plain serializable objects, arrays, and primitives. This issues is similar to react-redux hooks, check the [document](https://redux.js.org/faq/organizing-state#can-i-put-functions-promises-or-other-non-serializable-items-in-my-store-state) or this [issue](https://github.com/reduxjs/react-redux/issues/1286), but the target model pass to `store()` has no this limitations, you should convert non-serializable to serializable before returning.
+</details>
+
+<details>
+<summary>You should pass in equals function when returns complex types</summary>
+
+```js
+function TodoView() {
+  const [isEmpty, hasCompleted, allCompleted, active, filter] = useSelector(
+    () => [
+      todoStore.isEmpty,
+      todoStore.hasCompleted,
+      todoStore.allCompleted,
+      todoStore.activeType,
+      todoStore.filterType
+    ],
+    { equals: _.equals } // use lodash/isEqual
+  );
+  ...
+}
+```
+
+</details>
+
+:rotating_light:Attention please, `selector` should not returns non-serializable value such as function, Symbol or ES6 collection, because they are incomparable, you should select out plain serializable objects, arrays, and primitives. This issues is similar to react-redux hooks, check the [document](https://redux.js.org/faq/organizing-state#can-i-put-functions-promises-or-other-non-serializable-items-in-my-store-state) or this [issue](https://github.com/reduxjs/react-redux/issues/1286), but the target model pass to `store()` has no this limitations, you should convert non-serializable to serializable before returning.
+
+<details>
+<summary><strong>:rotating_light:You should returns serializable value</strong></summary>
+
+```js
+function Component() {
+  // DON'T DO THIS
+  const familyMemebers = useSelector(() => person.familyMemebers);
+  // DO THIS
+  const [father, mother] = useSelector(() => [
+    person.familyMemebers.get('father'),
+    person.familyMemebers.get('mother')
+  ]);
+  ...
+}
+```
+
+</details>
 
 ### `connect(selector, ownProps?)`
 
@@ -182,7 +274,8 @@ A HOC wrapper of `useSelector` to connect store state to the class components, a
 
 - `config`: same as useSelector's config parameter
 
-class component usage:
+<details>
+<summary><strong>Class components</strong></summary>
 
 ```js
 const counter = store({
@@ -201,7 +294,10 @@ class Counter extends Component {
 export default const ReactivedCounter = connect(selectToProps)(Counter);
 ```
 
-ownProps:
+</details>
+
+<details>
+<summary><strong>ownProps</strong></summary>
 
 ```js
 const selectToProps = (props) => ({
@@ -224,6 +320,8 @@ const Connected = connect(selectToProps)(Counter);
 
 render(<Connected step={10} />);
 ```
+
+</details>
 
 ### `<HoduxConfig equals={fn} debugger={fn} />`
 
@@ -285,6 +383,8 @@ then open <http://localhost:3000> in your web browser.
 
 - [@nx-js/observer-util](https://github.com/nx-js/observer-util) Transparent reactivity with 100% language coverage. Made with :heart: and ES6 Proxies.
 - [react-easy-state](https://github.com/solkimicreb/react-easy-state) Simple React state management
+
+> Hodux is Inspired by [react-easy-state](https://github.com/solkimicreb/react-easy-state) but considered for React Hooks.
 
 ## License
 

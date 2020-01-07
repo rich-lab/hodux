@@ -1,22 +1,41 @@
 English | [简体中文](./README.zh-CN.md)
 
-# Hodux
+<div align="center">
+  <h1><code>hodux</code></h1>
+  <p><strong>:rocket:Simple reactive React Hooks state management. Made with ES6 Proxies.</strong></p>
 
-[![Build Status](https://img.shields.io/travis/react-kit/hodux.svg?style=flat)](https://travis-ci.org/react-kit/hodux)
-[![Coverage Status](https://img.shields.io/coveralls/react-kit/hodux.svg?style=flat)](https://coveralls.io/r/react-kit/hodux)
-[![NPM version](https://img.shields.io/npm/v/hodux.svg?style=flat)](https://npmjs.org/package/hodux)
-[![size](https://badgen.net/bundlephobia/minzip/hodux@latest)](https://bundlephobia.com/result?p=hodux@latest)
-![React](https://img.shields.io/npm/dependency-version/hodux/peer/react?logo=react)
+  [![Build Status](https://img.shields.io/travis/react-kit/hodux.svg?style=flat)](https://travis-ci.org/react-kit/hodux)
+  [![Coverage Status](https://img.shields.io/coveralls/react-kit/hodux.svg?style=flat)](https://coveralls.io/r/react-kit/hodux)
+  [![NPM version](https://img.shields.io/npm/v/hodux.svg?style=flat)](https://npmjs.org/package/hodux)
+  [![size](https://badgen.net/bundlephobia/minzip/hodux@latest)](https://bundlephobia.com/result?p=hodux@latest)
+  ![React](https://img.shields.io/npm/dependency-version/hodux/peer/react?logo=react)
 
-:rocket:Simple reactive React global state management. Made with ES6 Proxies.
+</div>
 
-## :sparkles:Introduction
+<details>
+<summary><strong>Table of Contents</strong></summary>
 
-Hodux is a reactive global state management solution for React which supports both Hooks and Class, it has only 2 core APIs and quit easy to learn.
+- [:sparkles: Introduction](#sparkles-introduction)
+- [🔗 Try it online](#-try-it-online)
+- [🔨 Installation](#-installation)
+- [📖 API](#-api)
+  - [store(model)](#storemodel)
+  - [useSelector(selector, config?)](#useselectorselector-config)
+  - [connect(selector, ownProps?)](#connectselector-ownprops)
+  - [&lt;HoduxConfig equals={fn} debugger={fn} /&gt;](#lthoduxconfig-equalsfn-debuggerfn-gt)
+  - [batch(fn)](#batchfn)
+- [💿 Run examples locally](#-run-examples-locally)
+- [🎁 Acknowledgements](#-acknowledgements)
+
+</details>
+
+## :sparkles: Introduction
 
 - **Reactive** data flow.
-- Familiar **selector API** with react-redux hooks allows extracting state from store, and [**high-performance**](https://github.com/react-kit/hodux/issues/3) optimized.
+- **Selector hook** allows extracting state from store, and [high-performance](https://github.com/react-kit/hodux/issues/3) optimized.
 - **Perfectly** TypeScript support.
+
+![hodux](images/hodux.png)
 
 ```js
 import { store, useSelector } from 'hodux';
@@ -24,6 +43,7 @@ import { store, useSelector } from 'hodux';
 // create an observable object
 const counter = store({
   num: 0,
+  other: '',
   inc() { counter.num += 1; }
 });
 
@@ -37,11 +57,11 @@ export default function Counter(props) {
 }
 ```
 
-## Try it on CodeSandbox
+## 🔗 Try it online
 
 [![Edit](https://codesandbox.io/static/img/play-codesandbox.svg)](https://codesandbox.io/s/todo-mvc-b3rhz)
 
-## :package:Installation
+## 🔨 Installation
 
 ```sh
 npm install --save hodux
@@ -57,7 +77,7 @@ $ yarn add hodux
 - Description: pass in a pureModel or viewModel and returns a proxied-based observable object, and the observable object behave like origin object(just normal js object), it's just a wrapper of ES6 Proxy binding.
 
 <details>
-<summary><strong>Create store with viewModel</strong></summary>
+<summary>Create store with viewModel</summary>
 
 ```js
 // stores/counter.js
@@ -79,7 +99,7 @@ export default counter;
 </details>
 
 <details>
-<summary><strong>Create store with pureModel</strong></summary>
+<summary>Create store with pureModel</summary>
 
 ```js
 // stores/counter.js
@@ -102,7 +122,7 @@ export function Counter() {
 </details>
 
 <details>
-<summary><strong>Lazy creates</strong></summary>
+<summary>Lazy creates</summary>
 
 ```js
 // stores/counter.js
@@ -125,7 +145,7 @@ export default (initalCount = 0) => {
 </details>
 
 <details>
-<summary><strong>Create complex or large store(any valid JS structure)</strong></summary>
+<summary>Create complex or large store(any valid JS structure)</summary>
 
 ```js
 // stores can include nested data, arrays, Maps, Sets, getters, setters, inheritance, ...
@@ -136,7 +156,7 @@ const person = store({
     lastName: 'Smith',
     // getters
     get name() {
-      return `${user.firstName} ${user.lastName}`
+      return `${person.firstName} ${person.lastName}`
     },
     age: 25
   },
@@ -174,7 +194,7 @@ person.familyMembers.set('mother', mother);
   - `debugger`: the debugger function passed to `@nx-js/observer-util`
 
 <details>
-<summary><strong>Returns basic type(is recommended)</strong></summary>
+<summary>Returns basic type(is recommended)</summary>
 
 ```js
 function Counter() {
@@ -187,7 +207,7 @@ function Counter() {
 </details>
 
 <details>
-<summary><strong>Computed(calculation cache)</strong></summary>
+<summary>Computed(calculation cache)</summary>
 
 ```js
 function App() {
@@ -204,7 +224,7 @@ function App() {
 </details>
 
 <details>
-<summary><strong>Select state from multiple stores</strong></summary>
+<summary>Select state from multiple stores</summary>
 
 ```js
 function CompWithMutlStore() {
@@ -240,7 +260,7 @@ function TodoView() {
 :rotating_light:Attention please, `selector` should not returns non-serializable value such as function, Symbol or ES6 collection, because they are incomparable, you should select out plain serializable objects, arrays, and primitives. This issues is similar to react-redux hooks, check the [document](https://redux.js.org/faq/organizing-state#can-i-put-functions-promises-or-other-non-serializable-items-in-my-store-state) or this [issue](https://github.com/reduxjs/react-redux/issues/1286), but the target model pass to `store()` has no this limitations, you should convert non-serializable to serializable before returning.
 
 <details>
-<summary><strong>:rotating_light:You should returns serializable value</strong></summary>
+<summary>:rotating_light:You should returns serializable value</summary>
 
 ```js
 function Component() {
@@ -266,7 +286,7 @@ function connect<V extends {}, OwnProps = {}>(
 ): (classComponent: C) => ConnectedComponent<V, OwnProps>
 ```
 
-A HOC wrapper of `useSelector` to connect store state to the class components, and is only for class components.
+An HOC wrapper of `useSelector` to connect store state to the class components, and is only for class components.
 
 `connect` accepts two parameters:
 
@@ -275,7 +295,7 @@ A HOC wrapper of `useSelector` to connect store state to the class components, a
 - `config`: same as useSelector's config parameter
 
 <details>
-<summary><strong>Class components</strong></summary>
+<summary>Class components</summary>
 
 ```js
 const counter = store({
@@ -297,7 +317,7 @@ export default const ReactivedCounter = connect(selectToProps)(Counter);
 </details>
 
 <details>
-<summary><strong>ownProps</strong></summary>
+<summary>ownProps</summary>
 
 ```js
 const selectToProps = (props) => ({
@@ -348,14 +368,13 @@ ReactDOM.render(
 - Signature: `function batch(fn: Function) => void`
 - Description: a wrapper of `unstable_batchedUpdates`, to prevent multiples render caused by multiple store mutations in asynchronous handler such as `setTimeout` and `Promise`, etc. If you experience performance issues you can batch changes manually with `batch`.
 
-> NOTE: The React team plans to improve render batching in the future. The `batch` API may be removed in the future in favor of React's own batching.
+> The React team plans to improve render batching in the future. The `batch` API may be removed in the future in favor of React's own batching.
 
 ```js
 const listStore = store({
   loading: false,
   list: []
 });
-
 listStore.load = async () => {
   testStore.loading = true;
 
@@ -385,7 +404,3 @@ then open <http://localhost:3000> in your web browser.
 - [react-easy-state](https://github.com/solkimicreb/react-easy-state) Simple React state management
 
 > Hodux is Inspired by [react-easy-state](https://github.com/solkimicreb/react-easy-state) but considered for React Hooks.
-
-## License
-
-MIT

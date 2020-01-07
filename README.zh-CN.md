@@ -1,47 +1,62 @@
 简体中文 | [English](./README.md)
 
-# Hodux
+<div align="center">
+  <h1><code>hodux</code></h1>
+  <p><strong>:rocket:轻量级响应式React Hooks数据流方案。</strong></p>
 
-[![Build Status](https://img.shields.io/travis/react-kit/hodux.svg?style=flat)](https://travis-ci.org/react-kit/hodux)
-[![Coverage Status](https://img.shields.io/coveralls/react-kit/hodux.svg?style=flat)](https://coveralls.io/r/react-kit/hodux)
-[![NPM version](https://img.shields.io/npm/v/hodux.svg?style=flat)](https://npmjs.org/package/hodux)
-[![size](https://badgen.net/bundlephobia/minzip/hodux@latest)](https://bundlephobia.com/result?p=hodux@latest)
-![React](https://img.shields.io/npm/dependency-version/hodux/peer/react?logo=react)
+  [![Build Status](https://img.shields.io/travis/react-kit/hodux.svg?style=flat)](https://travis-ci.org/react-kit/hodux)
+  [![Coverage Status](https://img.shields.io/coveralls/react-kit/hodux.svg?style=flat)](https://coveralls.io/r/react-kit/hodux)
+  [![NPM version](https://img.shields.io/npm/v/hodux.svg?style=flat)](https://npmjs.org/package/hodux)
+  [![size](https://badgen.net/bundlephobia/minzip/hodux@latest)](https://bundlephobia.com/result?p=hodux@latest)
+  ![React](https://img.shields.io/npm/dependency-version/hodux/peer/react?logo=react)
 
-:rocket:（基于ES6 Proxy构建的）轻量级简单易用的React响应式数据流方案。
+</div>
 
-> Hodux灵感源自[react-easy-state](https://github.com/solkimicreb/react-easy-state)但抛弃HOC，拥抱Hooks。
+<details>
+<summary><strong>Table of Contents</strong></summary>
 
-## :sparkles:介绍
+- [:sparkles: 介绍](#sparkles-介绍)
+- [🔗 在线demo（TodoMVC）](#-在线demotodomvc)
+- [🔨 安装](#-安装)
+- [📖 API](#-api)
+  - [store(model)](#storemodel)
+  - [useSelector(selector, config?)](#useselectorselector-config)
+  - [connect(selector, ownProps?)](#connectselector-ownprops)
+  - [&lt;HoduxConfig equals={fn} debugger={fn} /&gt;](#lthoduxconfig-equalsfn-debuggerfn-gt)
+  - [batch(fn)](#batchfn)
+- [💿 本地运行示例](#-本地运行示例)
 
-- **响应式**数据流转，足够简单易懂。
-- 类react-redux hooks的**selector API**，可以按需从store提取数据，当且仅当选择的数据改变时组件才会刷新，[**高性能**](https://github.com/react-kit/hodux/issues/3)保证。
+</details>
+
+## :sparkles: 介绍
+
+- **响应式**数据流转，简单自然。
+- **Selector hook**取数，当且仅当选择的成员改变时组件才会刷新，[高性能](https://github.com/react-kit/hodux/issues/3)保证。
 - 完美支持**Typescript**。
+
+![hodux](images/hodux.png)
 
 ```js
 import { store, useSelector } from 'hodux';
 
-// 1、创建一个可观测的store（数据劫持）
+// 1、初始化一个observable对象
 const counter = store({
   num: 0,
-  otther: '',
-  inc() { counter.num += 1; }
+  other: ''
 });
 
-// 2、按需取数（依赖收集）
-export default function Counter(props) {
-  // 当且仅当num改变时组件re-render
+// 2、（按需）取数：当且仅当select的成员发生改变时组件才会re-render
+export default function Counter() {
   const num = useSelector(() => counter.num);
-
-  return <div onClick={counter.inc}>The used num:{num}</div>;
+  return <div onClick={() => counter.num += 1}>The used num:{num}</div>;
 }
 ```
 
-## 在线demo（TodoMVC）
+## 🔗 在线demo（TodoMVC）
 
 [![Edit](https://codesandbox.io/static/img/play-codesandbox.svg)](https://codesandbox.io/s/todo-mvc-b3rhz)
 
-## :package:安装
+## 🔨 安装
 
 ```bash
 $ npm install hodux --save
@@ -57,7 +72,7 @@ $ yarn add hodux
 - 说明：传入一个pureModel或viewModel，返回一个可观测（observable）对象，原始的model对象并没有任何改变，内部只是进行了一次Proxy binding，所以返回的observable对象的行为和原生js对象无异。得益于ES6 Proxy强大的数据劫持能力，store可以感知到更加细粒度的数据修改（如数组、对象等）。
 
 <details>
-<summary><strong>传入pureModel</strong></summary>
+<summary>传入pureModel</summary>
 
 ```js
 // stores/counter.js
@@ -80,7 +95,7 @@ export function Counter() {
 </details>
 
 <details>
-<summary><strong>传入viewModel（数据和操作数据的方法放在一起）</strong></summary>
+<summary>传入viewModel（数据和操作数据的方法放在一起）</summary>
 
 ```js
 // stores/counter.js
@@ -101,7 +116,7 @@ export default counter;
 </details>
 
 <details>
-<summary><strong>Lazy create（可处理初始值、内部变量等）</strong></summary>
+<summary>Lazy create（可处理初始值、内部变量等）</summary>
 
 ```js
 // stores/counter.js
@@ -124,7 +139,7 @@ export default (initalCount = 0) => {
 </details>
 
 <details>
-<summary><strong>复杂对象（任意合法的js数据结构）</strong></summary>
+<summary>复杂对象（任意合法的js数据结构）</summary>
 
 ```js
 // stores can include nested data, arrays, Maps, Sets, getters, setters, inheritance, ...
@@ -135,7 +150,7 @@ const person = store({
     lastName: 'Smith',
     // getters
     get name() {
-      return `${user.firstName} ${user.lastName}`
+      return `${person.firstName} ${person.lastName}`
     },
     age: 25
   },
@@ -173,7 +188,7 @@ person.familyMembers.set('mother', mother);
   - debugger：透传给[observer-util](https://github.com/nx-js/observer-util#boolean--isobservableobject)，一般用于调试打印一些日志
 
 <details>
-<summary><strong>返回基本数据类型（推荐）</strong></summary>
+<summary>返回基本数据类型（推荐）</summary>
 
 ```javascript
 function Counter() {
@@ -186,7 +201,7 @@ function Counter() {
 </details>
 
 <details>
-<summary><strong>Computed(计算缓存)</strong></summary>
+<summary>Computed(计算缓存)</summary>
 
 ```js
 function App() {
@@ -205,19 +220,19 @@ function App() {
 ```javascript
 function ComputedWithProps({ step }) {
   // 相当于computed
-	const total = useSelector(() => counterStore.count + step);
+  const total = useSelector(() => counterStore.count + step);
 }
 ```
 
 </details>
 
 <details>
-<summary><strong>select多个store</strong></summary>
+<summary>select多个store</summary>
 
 ```javascript
 function CompWithMutlStore() {
   // 当且仅当store1的count值或者store2的step值改变时才会re-render，result总会是最新的计算结果
-	const result = useSelector(() => store1.count + store2.step);
+  const result = useSelector(() => store1.count + store2.step);
 }
 ```
 
@@ -247,7 +262,7 @@ function TodoView() {
 :rotating_light:请注意：`selector` 的返回值必须是一个可序列化（serializable）类型（js对象、数组以及基本值），因为non-serializable值（如function、ES6 collection、Symbol、RegExp等）进行比较是无意义的，react-redux hooks也有此[限制](https://redux.js.org/faq/organizing-state#can-i-put-functions-promises-or-other-non-serializable-items-in-my-store-state)，但是`store()`没这个限制（接受任意observeable对象），你可以在`selector`内部对non-serializable值进行serializable转换后再返回。
 
 <details>
-<summary><strong>:rotating_light:selector应该返回可序列化（serializable）值</strong></summary>
+<summary>:rotating_light:selector应该返回可序列化（serializable）值</summary>
 
 ```js
 function Component() {
@@ -264,7 +279,7 @@ function Component() {
 
 </details>
 
-### 类组件绑定：`connect(selector, ownProps?)`
+### `connect(selector, ownProps?)`
 
 ```ts
 function connect<V extends {}, OwnProps = {}>(
@@ -276,7 +291,7 @@ function connect<V extends {}, OwnProps = {}>(
 `connect`是一个HOC，传参和`useSelector`基本一致，不同的是`selector`参数返回值需要是一个object（类似`mapStateToProps`），`OwnProps`和react-redux类似，connect支持ownProps。
 
 <details>
-<summary><strong>类组件写法</strong></summary>
+<summary>类组件写法</summary>
 
 ```js
 const selectToProps = () => ({ n: counter.n });
@@ -293,7 +308,7 @@ export default const ConnectedCounter = connect(selectToProps)(Counter);
 </details>
 
 <details>
-<summary><strong>支持ownProps</strong></summary>
+<summary>支持ownProps</summary>
 
 ```js
 const selectToProps = (props) => ({
@@ -375,7 +390,3 @@ $ cd examples/[folder] && npm run install && npm start
 ```
 
 然后用浏览器打开<http://localhost:3000>即可。
-
-## License
-
-MIT
